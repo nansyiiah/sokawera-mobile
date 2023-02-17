@@ -1,10 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sokaweramobile/Pages/DashboardScreen.dart';
 import 'package:sokaweramobile/Pages/LoginScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
-class LandingScreen extends StatelessWidget {
+class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
+
+  @override
+  State<LandingScreen> createState() => _LandingScreenState();
+}
+
+class _LandingScreenState extends State<LandingScreen> {
+  String name = "";
+  void initState() {
+    super.initState();
+  }
+
+  _loadUserData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getString('user');
+    if (user != null) {
+      Get.to(BottomNavBar());
+      setState(() {
+        name = user;
+      });
+    } else {
+      Get.to(LoginScreen());
+      setState(() {
+        name = "null";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +90,7 @@ class LandingScreen extends StatelessWidget {
                   backgroundColor: Color(0xFF68b7d8),
                 ),
                 onPressed: () {
-                  Get.to(LoginScreen());
+                  _loadUserData();
                 },
                 child: Icon(
                   Icons.arrow_right_rounded,

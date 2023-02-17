@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Network {
-  final String _url = 'http://127.0.0.1:8000/api/auth';
+  final String _url = 'http://10.0.2.2:8000/api/auth';
   var token = '';
-
+  
   _getToken() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     token = jsonDecode(localStorage.getString('token') ?? 'null')['token'];
