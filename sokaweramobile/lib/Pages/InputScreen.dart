@@ -109,7 +109,7 @@ class _InputScreenState extends State<InputScreen> {
                             int index_increment = index + 1;
                             return InkWell(
                               onTap: () {
-                                print("awikwok");
+                                print("awikwok => $index_increment");
                               },
                               child: Container(
                                 margin: EdgeInsets.only(
@@ -153,7 +153,7 @@ class _InputScreenState extends State<InputScreen> {
                                             ketList[index],
                                             style: GoogleFonts.poppins(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight.w500,
                                               color: Colors.black,
                                             ),
                                           ),
