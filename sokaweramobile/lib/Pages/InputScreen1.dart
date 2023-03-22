@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:core';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InputScreen1 extends StatefulWidget {
@@ -45,7 +48,24 @@ class _InputScreen1State extends State<InputScreen1> {
     }
   }
 
-  _login() async {
+  _savedDataToLocal() async {
+    List data_sebelum_append = [];
+    var data = {
+      'provinsi': provinsiController.text,
+      'kabupaten': kabupatenController.text,
+      'kecamatan': kecamatanController.text,
+      'desa': desaController.text,
+      'dusun': dusunController.text,
+      'nama_jalan': namaJalanController.text,
+      'rt': rtController.text,
+      'rw': rwController.text,
+      'nomor_kk': nomorKKController.text,
+    };
+    data_sebelum_append.add(data);
+    final userEncode = jsonEncode(data);
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.setString('keterangan_tempat', userEncode);
+    print(localStorage.getString('keterangan_tempat'));
     // var data = {
     //   'username': emailController.text,
     //   'password': passwordController.text,
@@ -295,7 +315,9 @@ class _InputScreen1State extends State<InputScreen1> {
               height: size.height * 0.11,
               width: size.width,
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  _savedDataToLocal();
+                },
                 child: Container(
                   alignment: Alignment.center,
                   margin: EdgeInsets.only(left: 24, right: 24, bottom: 24),

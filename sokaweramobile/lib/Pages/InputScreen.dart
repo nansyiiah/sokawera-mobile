@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Pages/InputScreen1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InputScreen extends StatefulWidget {
   const InputScreen({super.key});
@@ -11,6 +12,23 @@ class InputScreen extends StatefulWidget {
 }
 
 class _InputScreenState extends State<InputScreen> {
+  bool _isFilled = false;
+  void initState() {
+    _getKeteranganTempatFromLocal();
+    super.initState();
+  }
+
+  _getKeteranganTempatFromLocal() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var data = localStorage.getString('keterangan_tempat');
+    if (data != null) {
+      _isFilled = true;
+      return data;
+    } else {
+      return null;
+    }
+  }
+
   List ketList = [
     "Keterangan Tempat",
     "Keterangan Responden",
@@ -170,8 +188,8 @@ class _InputScreenState extends State<InputScreen> {
                                           margin: EdgeInsets.only(
                                             right: 10,
                                           ),
-                                          child: Icon(Icons
-                                              .check_box_outline_blank_rounded),
+                                          child: Icon(
+                                              Icons.check_box_outline_blank),
                                         ),
                                       ],
                                     ),

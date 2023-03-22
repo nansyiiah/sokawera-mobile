@@ -141,8 +141,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             showAlertDialog(context);
                           },
                           child: Container(
-                            height: 40,
-                            width: 40,
+                            height: 35,
+                            width: 35,
                             decoration: BoxDecoration(
                               color: Color(0xFF68b7d8),
                               borderRadius: BorderRadius.circular(6),

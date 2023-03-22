@@ -17,6 +17,7 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  @override
   String tokenLuar = "";
   _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -56,11 +57,12 @@ class _ListScreenState extends State<ListScreen> {
 
   getJsonData() async {
     var keterangan_tempat = "keterangan_tempat";
-    var response = await http
-        .get(Uri.parse("http://10.0.2.2:8000/api/keterangan_tempat"), headers: {
-      "Accept": "application/json",
-      // "Authorization": "Bearer $tokenLuar",
-    });
+    var response = await http.get(
+        Uri.parse("http://127.0.0.1:8000/api/keterangan_tempat"),
+        headers: {
+          "Accept": "application/json",
+          // "Authorization": "Bearer $tokenLuar",
+        });
     // var jsonData = jsonDecode(response.body);
     var jsonData = jsonDecode(response.body);
     // print(jsonData);
