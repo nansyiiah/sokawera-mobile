@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:sokaweramobile/Network/data_keterangan_tempat.dart';
 import 'package:sokaweramobile/Network/data_keterangan_responden.dart';
+import 'package:sokaweramobile/Pages/DetailScreen.dart';
 
 class ListScreen extends StatefulWidget {
   const ListScreen({super.key});
@@ -185,7 +186,13 @@ class _ListScreenState extends State<ListScreen> {
                         print(rtList[index]);
                         return InkWell(
                           onTap: () {
-                            print("awikwok => $index");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DetailScreen(item: rtList[index]["id"]),
+                              ),
+                            );
                           },
                           child: Container(
                             margin: EdgeInsets.only(

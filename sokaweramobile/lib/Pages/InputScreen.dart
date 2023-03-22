@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sokaweramobile/Pages/InputScreen1.dart';
 
 class InputScreen extends StatefulWidget {
   const InputScreen({super.key});
@@ -109,7 +111,11 @@ class _InputScreenState extends State<InputScreen> {
                             int index_increment = index + 1;
                             return InkWell(
                               onTap: () {
-                                print("awikwok => $index_increment");
+                                switch (index_increment) {
+                                  case 1:
+                                    Get.to(InputScreen1());
+                                    break;
+                                }
                               },
                               child: Container(
                                 margin: EdgeInsets.only(
