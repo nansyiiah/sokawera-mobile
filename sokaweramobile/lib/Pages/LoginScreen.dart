@@ -39,6 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', body["token"]);
       localStorage.setString('user', body["data"]);
+      localStorage.setString('username', emailController.text);
+      localStorage.setInt('id_petugas', body['id']);
       Get.to(BottomNavBar());
     } else {
       var snackBar = SnackBar(content: Text('Email / Password Salah'));

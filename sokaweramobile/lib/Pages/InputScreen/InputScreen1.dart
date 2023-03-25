@@ -16,21 +16,26 @@ class InputScreen1 extends StatefulWidget {
 
 class _InputScreen1State extends State<InputScreen1> {
   String name = "";
-  final TextEditingController provinsiController =
+  var data;
+  TextEditingController provinsiController =
       TextEditingController(text: "JAWA TENGAH");
-  final TextEditingController kabupatenController =
+  TextEditingController kabupatenController =
       TextEditingController(text: "BANYUMAS");
-  final TextEditingController kecamatanController =
+  TextEditingController kecamatanController =
       TextEditingController(text: "PATIKRAJA");
-  final TextEditingController desaController =
+  TextEditingController desaController =
       TextEditingController(text: "SOKAWERA");
-  final TextEditingController dusunController = TextEditingController();
-  final TextEditingController namaJalanController = TextEditingController();
-  final TextEditingController rtController = TextEditingController();
-  final TextEditingController rwController = TextEditingController();
-  final TextEditingController nomorKKController = TextEditingController();
+  TextEditingController dusunController = TextEditingController();
+  TextEditingController namaJalanController = TextEditingController();
+  TextEditingController rtController = TextEditingController();
+  TextEditingController rwController = TextEditingController();
+  TextEditingController nomorKKController = TextEditingController();
+  TextEditingController nomorUrutRumah = TextEditingController();
+  TextEditingController nomorUrutKeluarga = TextEditingController();
+
   void initState() {
     _loadUserData();
+    _loadKeteranganData();
     super.initState();
   }
 
@@ -46,6 +51,59 @@ class _InputScreen1State extends State<InputScreen1> {
         name = "null";
       });
     }
+  }
+
+  _loadKeteranganData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var data = localStorage.getString('keterangan_tempat');
+    if (data != null) {
+      setState(() {
+        var dusun = localStorage.getString('dusun');
+        var provinsi = localStorage.getString('provinsi');
+        var kabupaten = localStorage.getString('kabupaten');
+        var kecamatan = localStorage.getString('kecamatan');
+        var desa = localStorage.getString('desa');
+        var nama_jalan = localStorage.getString('nama_jalan');
+        var rt = localStorage.getString('rt');
+        var rw = localStorage.getString('rw');
+        var nomor_kk = localStorage.getString('nomor_kk');
+        dusunController.text = dusun ?? "";
+        namaJalanController.text = nama_jalan ?? "";
+        rtController.text = rt ?? "";
+        rwController.text = rw ?? "";
+        nomorKKController.text = nomor_kk ?? "";
+      });
+    }
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Success Saved Data !"),
+      content: Text(
+        "Sukses menyimpan data !",
+        style: GoogleFonts.poppins(),
+      ),
+      actions: [
+        cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   _savedDataToLocal() async {
@@ -64,8 +122,16 @@ class _InputScreen1State extends State<InputScreen1> {
     data_sebelum_append.add(data);
     final userEncode = jsonEncode(data);
     SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.setString('dusun', dusunController.text);
+    localStorage.setString('nama_jalan', namaJalanController.text);
+    localStorage.setString('rt', rtController.text);
+    localStorage.setString('rw', rwController.text);
+    localStorage.setString('nomor_kk', nomorKKController.text);
     localStorage.setString('keterangan_tempat', userEncode);
     print(localStorage.getString('keterangan_tempat'));
+    if (localStorage.getString("keterangan_tempat") != null) {
+      showAlertDialog(context);
+    }
     // var data = {
     //   'username': emailController.text,
     //   'password': passwordController.text,

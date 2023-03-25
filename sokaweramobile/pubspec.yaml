@@ -32,6 +32,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
+  intl: ^0.17.0
   get: ^4.6.5
   google_fonts: ^3.0.1
   group_list_view: ^1.1.1

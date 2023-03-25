@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sokaweramobile/Pages/InputScreen1.dart';
+import 'InputScreen/InputScreen1.dart';
+import 'InputScreen/InputScreen2.dart';
+import 'InputScreen/InputScreen3.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'InputScreen/InputScreen1.dart';
+import 'InputScreen/InputScreen2.dart';
 
 class InputScreen extends StatefulWidget {
   const InputScreen({super.key});
@@ -12,20 +17,59 @@ class InputScreen extends StatefulWidget {
 }
 
 class _InputScreenState extends State<InputScreen> {
-  bool _isFilled = false;
+  String name = "";
+  String initial = "";
+  bool _isFilled1 = false;
+  bool _isFilled2 = false;
+
   void initState() {
     _getKeteranganTempatFromLocal();
+    _getKeteranganPetugasFromLocal();
+    _loadUserData();
     super.initState();
   }
 
   _getKeteranganTempatFromLocal() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var data = localStorage.getString('keterangan_tempat');
+
     if (data != null) {
-      _isFilled = true;
-      return data;
+      setState(() {
+        _isFilled1 = true;
+      });
+      print(data);
     } else {
       return null;
+    }
+  }
+
+  _getKeteranganPetugasFromLocal() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var data = localStorage.getString('keterangan_petugas');
+
+    if (data != null) {
+      setState(() {
+        _isFilled2 = true;
+      });
+      print(data);
+    } else {
+      return null;
+    }
+  }
+
+  _loadUserData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getString('user');
+    if (user != null) {
+      var inisial = localStorage.getString('username');
+      setState(() {
+        name = user;
+        initial = inisial!;
+      });
+    } else {
+      setState(() {
+        name = "null";
+      });
     }
   }
 
@@ -41,6 +85,7 @@ class _InputScreenState extends State<InputScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Color(0xFF68b7d8),
       body: SingleChildScrollView(
@@ -58,7 +103,7 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
             Container(
-              height: size.height * 0.7,
+              height: size.height * 1,
               width: size.width,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -118,87 +163,191 @@ class _InputScreenState extends State<InputScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: size.height * 0.55,
-                        width: size.width,
-                        child: ListView.builder(
-                          padding: EdgeInsets.only(top: 24),
-                          shrinkWrap: true,
-                          itemCount: ketList.length,
-                          itemBuilder: (context, index) {
-                            int index_increment = index + 1;
-                            return InkWell(
-                              onTap: () {
-                                switch (index_increment) {
-                                  case 1:
-                                    Get.to(InputScreen1());
-                                    break;
-                                }
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(
-                                    left: 24, right: 24, bottom: 24),
-                                height: size.height * 0.055,
-                                width: size.width,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(blurRadius: 3, color: Colors.grey)
-                                  ],
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          alignment: Alignment.center,
-                                          margin: EdgeInsets.only(
-                                            left: 10,
-                                          ),
-                                          child: Text(
-                                            'Step $index_increment: ',
+                      Column(
+                        children: [
+                          Wrap(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Get.to(InputScreen1());
+                                },
+                                child: Container(
+                                  height: size.height * 0.06,
+                                  margin: EdgeInsets.only(
+                                    left: 24,
+                                    right: 24,
+                                    top: 24,
+                                  ),
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  alignment: Alignment.center,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 0.3,
+                                        color: Colors.grey,
+                                      )
+                                    ],
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Step 1:",
                                             style: GoogleFonts.poppins(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.grey,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
-                                        ),
-                                        Spacer(),
-                                        Container(
-                                          margin: EdgeInsets.only(right: 20),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            ketList[index],
+                                          Spacer(),
+                                          Text(
+                                            "Keterangan Tempat",
                                             style: GoogleFonts.poppins(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400),
                                           ),
-                                        ),
-                                        Spacer(),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          margin: EdgeInsets.only(
-                                            right: 10,
+                                          Spacer(),
+                                          Icon(
+                                            _isFilled1
+                                                ? Icons.check_box_outlined
+                                                : Icons.check_box_outline_blank,
                                           ),
-                                          child: Icon(
-                                              Icons.check_box_outline_blank),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => InputScreen2(
+                                        name: name,
+                                        inisial: initial,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: size.height * 0.06,
+                                  margin: EdgeInsets.only(
+                                    left: 24,
+                                    right: 24,
+                                    top: 24,
+                                  ),
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  alignment: Alignment.center,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 0.3,
+                                        color: Colors.grey,
+                                      )
+                                    ],
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Step 2:",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          Text(
+                                            "Keterangan Petugas",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          Spacer(),
+                                          Icon(
+                                            _isFilled2
+                                                ? Icons.check_box_outlined
+                                                : Icons.check_box_outline_blank,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => InputScreen3(
+                                        name: name,
+                                        inisial: initial,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: size.height * 0.06,
+                                  margin: EdgeInsets.only(
+                                    left: 24,
+                                    right: 24,
+                                    top: 24,
+                                  ),
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  alignment: Alignment.center,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 0.3,
+                                        color: Colors.grey,
+                                      )
+                                    ],
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Step 3:",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          Text(
+                                            "Keterangan Responden",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          Spacer(),
+                                          Icon(
+                                            _isFilled2
+                                                ? Icons.check_box_outlined
+                                                : Icons.check_box_outline_blank,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
