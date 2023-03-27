@@ -41,7 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
       localStorage.setString('user', body["data"]);
       localStorage.setString('username', emailController.text);
       localStorage.setInt('id_petugas', body['id']);
-      Get.to(BottomNavBar());
+      Get.to(BottomNavBar(
+        onPressed: () {},
+      ));
     } else {
       var snackBar = SnackBar(content: Text('Email / Password Salah'));
       // Step 3

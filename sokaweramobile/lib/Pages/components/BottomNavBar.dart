@@ -4,6 +4,8 @@ import 'package:sokaweramobile/Pages/InputScreen.dart';
 import 'package:sokaweramobile/Pages/ListScreen.dart';
 
 class BottomNavBar extends StatefulWidget {
+  final Function onPressed;
+  const BottomNavBar({super.key, required this.onPressed});
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }

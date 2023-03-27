@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:core';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class InputScreen1 extends StatefulWidget {
   const InputScreen1({super.key});
@@ -53,6 +55,26 @@ class _InputScreen1State extends State<InputScreen1> {
     }
   }
 
+  void rebuildPage() {
+    setState(() {});
+  }
+
+  _deleteLocalKeteranganTempatData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.remove('dusun');
+    localStorage.remove('provinsi');
+    localStorage.remove('kabupaten');
+    localStorage.remove('kecamatan');
+    localStorage.remove('desa');
+    localStorage.remove('nama_jalan');
+    localStorage.remove('rt');
+    localStorage.remove('rw');
+    localStorage.remove('nomor_kk');
+    localStorage.remove('keterangan_tempat');
+    Navigator.of(context, rootNavigator: true).pop();
+    Get.to(BottomNavBar(onPressed: () {}));
+  }
+
   _loadKeteranganData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var data = localStorage.getString('keterangan_tempat');
@@ -64,13 +86,13 @@ class _InputScreen1State extends State<InputScreen1> {
         var kecamatan = localStorage.getString('kecamatan');
         var desa = localStorage.getString('desa');
         var nama_jalan = localStorage.getString('nama_jalan');
-        var rt = localStorage.getString('rt');
-        var rw = localStorage.getString('rw');
+        var rt = localStorage.getInt('rt');
+        var rw = localStorage.getInt('rw');
         var nomor_kk = localStorage.getString('nomor_kk');
         dusunController.text = dusun ?? "";
         namaJalanController.text = nama_jalan ?? "";
-        rtController.text = rt ?? "";
-        rwController.text = rw ?? "";
+        rtController.text = "${rt}";
+        rwController.text = "${rw}";
         nomorKKController.text = nomor_kk ?? "";
       });
     }
@@ -82,6 +104,7 @@ class _InputScreen1State extends State<InputScreen1> {
       child: Text("OK"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
+        Get.to(BottomNavBar(onPressed: () {}));
       },
     );
 
@@ -94,6 +117,44 @@ class _InputScreen1State extends State<InputScreen1> {
       ),
       actions: [
         cancelButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showDeleteDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop(false);
+      },
+    );
+
+    Widget okButton = TextButton(
+      onPressed: () {
+        _deleteLocalKeteranganTempatData();
+      },
+      child: Text("OK"),
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Message"),
+      content: Text(
+        "Are you sure want to delete ?",
+        style: GoogleFonts.poppins(),
+      ),
+      actions: [
+        cancelButton,
+        okButton,
       ],
     );
 
@@ -124,8 +185,8 @@ class _InputScreen1State extends State<InputScreen1> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     localStorage.setString('dusun', dusunController.text);
     localStorage.setString('nama_jalan', namaJalanController.text);
-    localStorage.setString('rt', rtController.text);
-    localStorage.setString('rw', rwController.text);
+    localStorage.setInt('rt', int.parse(rtController.text));
+    localStorage.setInt('rw', int.parse(rwController.text));
     localStorage.setString('nomor_kk', nomorKKController.text);
     localStorage.setString('keterangan_tempat', userEncode);
     print(localStorage.getString('keterangan_tempat'));
@@ -156,10 +217,21 @@ class _InputScreen1State extends State<InputScreen1> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+        elevation: 2,
         centerTitle: true,
         title: Text("Keterangan Tempat"),
         backgroundColor: Color(0xFF68b7d8),
+        actions: [
+          InkWell(
+            onTap: () {
+              showDeleteDialog(context);
+            },
+            child: Container(
+              child: Icon(Icons.delete),
+              padding: EdgeInsets.only(right: 15),
+            ),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

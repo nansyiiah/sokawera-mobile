@@ -23,7 +23,9 @@ class _LandingScreenState extends State<LandingScreen> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = localStorage.getString('user');
     if (user != null) {
-      Get.to(BottomNavBar());
+      Get.to(BottomNavBar(
+        onPressed: () {},
+      ));
       setState(() {
         name = user;
       });

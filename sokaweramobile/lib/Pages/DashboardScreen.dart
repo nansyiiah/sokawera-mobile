@@ -51,8 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   showAlertDialog(BuildContext context) {
     _logout() async {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.remove('user');
-      localStorage.remove('token');
+      localStorage.clear();
       Get.to(LoginScreen());
     }
 

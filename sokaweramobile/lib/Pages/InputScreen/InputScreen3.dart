@@ -22,6 +22,7 @@ class InputScreen3 extends StatefulWidget {
 class _InputScreen3State extends State<InputScreen3> {
   String name = "";
   String inisial = "";
+  var rt, rw;
   var data;
   TextEditingController tanggalController = TextEditingController();
   TextEditingController namaPemeriksaController = TextEditingController();
@@ -139,6 +140,17 @@ class _InputScreen3State extends State<InputScreen3> {
       }
     }
 
+    _loadKeteranganTempatData() async {
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      var data = localStorage.getString('keterangan_tempat');
+      if (data != null) {
+        setState(() {
+          rt = localStorage.getString('rt');
+          rw = localStorage.getString('rw');
+        });
+      }
+    }
+
     _loadKeteranganData() async {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       var data = localStorage.getString('keterangan_petugas');
@@ -165,7 +177,7 @@ class _InputScreen3State extends State<InputScreen3> {
     }
 
     Size size = MediaQuery.of(context).size;
-    _loadKeteranganData();
+    _loadKeteranganTempatData();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
