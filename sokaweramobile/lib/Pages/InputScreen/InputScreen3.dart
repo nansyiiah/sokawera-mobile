@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:core';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sokaweramobile/Network/api.dart';
 
 class InputScreen3 extends StatefulWidget {
   final String name;
@@ -26,6 +27,9 @@ class _InputScreen3State extends State<InputScreen3> {
   TextEditingController namaPemeriksaController = TextEditingController();
   TextEditingController tanggalPeemeriksaController = TextEditingController();
   TextEditingController inisialPemeriksaController = TextEditingController();
+
+  TextEditingController jumlah_laki_sesuai_kk = TextEditingController();
+  TextEditingController jumlah_perempuan_sesuai_kk = TextEditingController();
 
   void initState() {
     _loadUserData();
@@ -83,6 +87,29 @@ class _InputScreen3State extends State<InputScreen3> {
     TextEditingController tandaTanganPencacahController =
         TextEditingController(text: widget.inisial);
     inisial = widget.inisial;
+    var total_keluarga;
+
+    _calculate() async {
+      total_keluarga = int.parse(jumlah_laki_sesuai_kk.text) +
+          int.parse(jumlah_perempuan_sesuai_kk.text);
+
+      var data = {
+        'nama_kepala_keluarga': namaController.text,
+        'jumlah_anggota_keluarga_sesuai_kk': total_keluarga,
+        'jumlah_anggota_keluarga_sesuai_kk_laki': jumlah_laki_sesuai_kk.text,
+        'jumlah_anggota_keluarga_sesuai_kk_perempuan':
+            jumlah_perempuan_sesuai_kk.text,
+      };
+
+      var res = await Network().store(data, 'keterangan_responden');
+      var body = json.decode(res.body);
+      if (body['status'] == 200) {
+        print("success insert data");
+      } else {
+        print(body);
+      }
+    }
+
     _savedDataToLocal() async {
       List data_sebelum_append = [];
       var data = {
@@ -156,7 +183,6 @@ class _InputScreen3State extends State<InputScreen3> {
                 controller: namaController,
                 readOnly: true,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person),
                   labelText: 'Nama Kepala Keluarga (KK)',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
@@ -192,10 +218,9 @@ class _InputScreen3State extends State<InputScreen3> {
                     padding:
                         const EdgeInsets.only(left: 24, right: 24, top: 24),
                     child: TextFormField(
-                      // controller: namaController,
+                      controller: jumlah_laki_sesuai_kk,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.man),
                         labelText: 'Laki Laki',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
@@ -218,10 +243,9 @@ class _InputScreen3State extends State<InputScreen3> {
                     padding:
                         const EdgeInsets.only(left: 24, right: 24, top: 24),
                     child: TextFormField(
-                      // controller: namaController,
+                      controller: jumlah_perempuan_sesuai_kk,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.woman),
                         labelText: 'Perempuan',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
@@ -265,7 +289,6 @@ class _InputScreen3State extends State<InputScreen3> {
                       // controller: namaController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.man),
                         labelText: 'Laki Laki',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
@@ -291,7 +314,6 @@ class _InputScreen3State extends State<InputScreen3> {
                       // controller: namaController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.woman),
                         labelText: 'Perempuan',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
@@ -335,7 +357,6 @@ class _InputScreen3State extends State<InputScreen3> {
                       // controller: namaController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.man),
                         labelText: 'Laki Laki',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
@@ -361,7 +382,6 @@ class _InputScreen3State extends State<InputScreen3> {
                       // controller: namaController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.woman),
                         labelText: 'Perempuan',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
@@ -387,7 +407,7 @@ class _InputScreen3State extends State<InputScreen3> {
               alignment: Alignment.center,
               child: Text(
                 textAlign: TextAlign.center,
-                "Jumlah anggota keluarga yang tidak tinggal di rumah ini (sesuai KK):",
+                "Jumlah orang yang tidak dalam KK namun tinggal dirumah ini:",
                 style: GoogleFonts.poppins(
                     color: Colors.grey,
                     fontSize: 14,
@@ -405,7 +425,6 @@ class _InputScreen3State extends State<InputScreen3> {
                       // controller: namaController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.man),
                         labelText: 'Laki Laki',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
@@ -431,8 +450,340 @@ class _InputScreen3State extends State<InputScreen3> {
                       // controller: namaController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.woman),
                         labelText: 'Perempuan',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                textAlign: TextAlign.center,
+                "Jumlah anggota keluarga yang sedang menyusui :",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
+              child: TextFormField(
+                // controller: namaController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Jumlah anggota keluarga yang sedang menyusui',
+                  labelStyle: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            ), //
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                textAlign: TextAlign.center,
+                "Jumlah anggota keluarga memiliki jaminan kesehatan :",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Laki Laki',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Perempuan',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                textAlign: TextAlign.center,
+                "Jumlah anggota keluarga sedang mencari pekerjaan / menyiapkan usaha :",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Laki Laki',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Perempuan',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                textAlign: TextAlign.center,
+                "Jumlah anggota keluarga sedang menjadi TKI di luar negeri :",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Laki Laki',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Perempuan',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                textAlign: TextAlign.center,
+                "Jumlah anggota keluarga menjadi PNS/TNI/POLRI/Pensiunan :",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'PNS',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'TNI/POLRI',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, top: 24),
+                    child: TextFormField(
+                      // controller: namaController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Pensiunan',
                         labelStyle: const TextStyle(
                           color: Colors.grey,
                         ),
@@ -458,7 +809,7 @@ class _InputScreen3State extends State<InputScreen3> {
               width: size.width,
               child: InkWell(
                 onTap: () {
-                  _savedDataToLocal();
+                  _calculate();
                 },
                 child: Container(
                   alignment: Alignment.center,

@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
       'password': passwordController.text,
     };
 
-    var res = await Network().auth(data, '/login');
+    var res = await Network().auth(data, 'login');
     var body = json.decode(res.body);
     if (body["message"] == "Success") {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
