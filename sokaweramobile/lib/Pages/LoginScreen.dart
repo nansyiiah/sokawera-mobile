@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sokaweramobile/Network/api.dart';
 import 'dart:convert';
-import 'package:sokaweramobile/Pages/DashboardScreen.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -35,15 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
     var res = await Network().auth(data, 'login');
     var body = json.decode(res.body);
+
     if (body["message"] == "Success") {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('token', body["token"]);
       localStorage.setString('user', body["data"]);
       localStorage.setString('username', emailController.text);
       localStorage.setInt('id_petugas', body['id']);
-      Get.to(BottomNavBar(
-        onPressed: () {},
-      ));
+      Get.to(BottomNavBar());
     } else {
       var snackBar = SnackBar(content: Text('Email / Password Salah'));
       // Step 3

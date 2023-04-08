@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sokaweramobile/Pages/DashboardScreen.dart';
 import 'package:sokaweramobile/Pages/InputScreen.dart';
 import 'package:sokaweramobile/Pages/ListScreen.dart';
+import 'package:sokaweramobile/Pages/DashboardScreen/DashboardScreen.dart';
 
 class BottomNavBar extends StatefulWidget {
-  final Function onPressed;
-  const BottomNavBar({super.key, required this.onPressed});
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }

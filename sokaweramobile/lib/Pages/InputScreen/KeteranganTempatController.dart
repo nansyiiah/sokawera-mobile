@@ -9,14 +9,16 @@ import 'dart:core';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
-class InputScreen1 extends StatefulWidget {
-  const InputScreen1({super.key});
+class KeteranganTempatController extends StatefulWidget {
+  const KeteranganTempatController({super.key});
 
   @override
-  State<InputScreen1> createState() => _InputScreen1State();
+  State<KeteranganTempatController> createState() =>
+      _KeteranganTempatControllerState();
 }
 
-class _InputScreen1State extends State<InputScreen1> {
+class _KeteranganTempatControllerState
+    extends State<KeteranganTempatController> {
   String name = "";
   var data;
   TextEditingController provinsiController =
@@ -46,7 +48,7 @@ class _InputScreen1State extends State<InputScreen1> {
     var user = localStorage.getString('user');
     if (user != null) {
       setState(() {
-        name = user; //nama petugas
+        name = user;
       });
     } else {
       setState(() {
@@ -71,8 +73,11 @@ class _InputScreen1State extends State<InputScreen1> {
     localStorage.remove('rw');
     localStorage.remove('nomor_kk');
     localStorage.remove('keterangan_tempat');
+    localStorage.remove('nomor_urut_keluarga');
+    localStorage.remove('nomor_urut_rumah');
+
     Navigator.of(context, rootNavigator: true).pop();
-    Get.to(BottomNavBar(onPressed: () {}));
+    Get.to(BottomNavBar());
   }
 
   _loadKeteranganData() async {
@@ -86,14 +91,18 @@ class _InputScreen1State extends State<InputScreen1> {
         var kecamatan = localStorage.getString('kecamatan');
         var desa = localStorage.getString('desa');
         var nama_jalan = localStorage.getString('nama_jalan');
+        var nomor_urut_kel = localStorage.getInt('nomor_urut_keluarga');
+        var nomor_urut_rumah = localStorage.getInt('nomor_urut_rumah');
         var rt = localStorage.getInt('rt');
         var rw = localStorage.getInt('rw');
-        var nomor_kk = localStorage.getString('nomor_kk');
+        var nomor_kk = localStorage.getInt('nomor_kk');
         dusunController.text = dusun ?? "";
         namaJalanController.text = nama_jalan ?? "";
         rtController.text = "${rt}";
         rwController.text = "${rw}";
-        nomorKKController.text = nomor_kk ?? "";
+        nomorKKController.text = "${nomor_kk}";
+        nomorUrutKeluarga.text = "${nomor_urut_kel}";
+        nomorUrutRumah.text = "${nomor_urut_rumah}";
       });
     }
   }
@@ -104,7 +113,7 @@ class _InputScreen1State extends State<InputScreen1> {
       child: Text("OK"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
-        Get.to(BottomNavBar(onPressed: () {}));
+        Get.to(BottomNavBar());
       },
     );
 
@@ -170,6 +179,8 @@ class _InputScreen1State extends State<InputScreen1> {
   _savedDataToLocal() async {
     List data_sebelum_append = [];
     var data = {
+      'nomor_urut_rumah': nomorUrutRumah.text,
+      'nomor_urut_keluarga': nomorUrutKeluarga.text,
       'provinsi': provinsiController.text,
       'kabupaten': kabupatenController.text,
       'kecamatan': kecamatanController.text,
@@ -187,29 +198,15 @@ class _InputScreen1State extends State<InputScreen1> {
     localStorage.setString('nama_jalan', namaJalanController.text);
     localStorage.setInt('rt', int.parse(rtController.text));
     localStorage.setInt('rw', int.parse(rwController.text));
-    localStorage.setString('nomor_kk', nomorKKController.text);
+    localStorage.setInt('nomor_kk', int.parse(nomorKKController.text));
+    localStorage.setInt('nomor_urut_rumah', int.parse(nomorUrutRumah.text));
+    localStorage.setInt(
+        'nomor_urut_keluarga', int.parse(nomorUrutKeluarga.text));
     localStorage.setString('keterangan_tempat', userEncode);
     print(localStorage.getString('keterangan_tempat'));
     if (localStorage.getString("keterangan_tempat") != null) {
       showAlertDialog(context);
     }
-    // var data = {
-    //   'username': emailController.text,
-    //   'password': passwordController.text,
-    // };
-
-    // var res = await Network().auth(data, '/login');
-    // var body = json.decode(res.body);
-    // if (body["message"] == "Success") {
-    //   SharedPreferences localStorage = await SharedPreferences.getInstance();
-    //   localStorage.setString('token', body["token"]);
-    //   localStorage.setString('user', body["data"]);
-    //   Get.to(BottomNavBar());
-    // } else {
-    //   var snackBar = SnackBar(content: Text('Email / Password Salah'));
-    //   // Step 3
-    //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    // }
   }
 
   @override
@@ -236,6 +233,72 @@ class _InputScreen1State extends State<InputScreen1> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              child: Text(
+                "Nomor urut rumah dan keluarga : ",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      controller: nomorUrutRumah,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Nomor urut rumah',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      controller: nomorUrutKeluarga,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Nomor urut keluarga',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+              ],
+            ),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),

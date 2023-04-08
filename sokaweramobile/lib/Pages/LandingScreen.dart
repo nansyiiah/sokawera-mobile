@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sokaweramobile/Pages/DashboardScreen.dart';
 import 'package:sokaweramobile/Pages/LoginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
@@ -23,9 +22,7 @@ class _LandingScreenState extends State<LandingScreen> {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = localStorage.getString('user');
     if (user != null) {
-      Get.to(BottomNavBar(
-        onPressed: () {},
-      ));
+      Get.to(BottomNavBar());
       setState(() {
         name = user;
       });
