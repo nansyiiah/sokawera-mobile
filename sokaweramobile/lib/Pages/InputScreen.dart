@@ -164,8 +164,11 @@ class _InputScreenState extends State<InputScreen> {
 
     var res = await Network().store(data, 'keterangan_responden');
     var body = json.decode(res.body);
+    // print(parsing["id_petugas"]);
     if (body["status"] == 200) {
       print("sukses insert keterangan responden");
+    } else {
+      print(body);
     }
   }
 

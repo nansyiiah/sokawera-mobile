@@ -24,8 +24,18 @@ class Network {
 
   getData(apiURL) async {
     var fullUrl = "https://babygru.tech/api/" + apiURL;
-    await _getToken();
     return await http.get(Uri.parse(fullUrl), headers: _setHeaders());
+  }
+
+  getDataId(id, apiURL) async {
+    var fullUrl = "https://babygru.tech/api/" + apiURL + "/${id}";
+    // await _getToken();
+    return await http.get(Uri.parse(fullUrl), headers: _setHeaders());
+  }
+
+  deleteDataNik(nik) async {
+    var fullURL = "https://babygru.tech/api/delete/" + nik;
+    return await http.delete(Uri.parse(fullURL), headers: _setHeaders());
   }
 
   _setHeaders() => {

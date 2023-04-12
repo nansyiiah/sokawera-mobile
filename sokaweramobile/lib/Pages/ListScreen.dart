@@ -207,7 +207,10 @@ class _ListScreenState extends State<ListScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => DetailScreen(
-                                              item: rtList[index]["id"]),
+                                            item: rtList[index]["id"],
+                                            nik: rtList[index]['nik_kk'],
+                                            // kk: rtList[index]['nik_kk'],
+                                          ),
                                         ),
                                       );
                                     },

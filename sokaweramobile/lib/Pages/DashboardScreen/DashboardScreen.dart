@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/LoginScreen.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,13 +18,12 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String name = "";
-  Map<String, double> dataMap = {
-    "Flutter": 5,
-    "React": 3,
-    "Xamarin": 2,
-    "Ionic": 2,
-  };
+  var jml_laki;
+  var jml_perempuan;
+  var total_penduduk;
+  List data_responden = [];
   int _currentIndex = 0;
+  var data_res_json = {};
   late List<Widget> _children;
   @override
   void initState() {
@@ -31,6 +33,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       DashboardScreen(),
     ];
     _loadUserData();
+    _getLogsData();
+    _getSummaryData();
     super.initState();
   }
 
@@ -46,6 +50,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
         name = "null";
       });
     }
+  }
+
+  _getLogsData() async {
+    var res = await Network().getData('keterangan_responden');
+    var jsonData = jsonDecode(res.body);
+    for (var element in jsonData['keterangan_responden']) {
+      setState(() {
+        data_res_json = {
+          'nama_kepala_keluarga': element['nama_kepala_keluarga'],
+          'rt': element['rt'],
+          'rw': element['rw'],
+          'petugas': element['petugas']['name'],
+        };
+        data_responden.add(data_res_json);
+      });
+    }
+  }
+
+  _getSummaryData() async {
+    var res = await Network().getData('keterangan_sosial/gender');
+    var jsonData = jsonDecode(res.body);
+    setState(() {
+      jml_laki = jsonData["jml_laki"];
+      jml_perempuan = jsonData['jml_perempuan'];
+      total_penduduk = jsonData['total_penduduk'];
+    });
   }
 
   showAlertDialog(BuildContext context) {
@@ -174,14 +204,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          child: Text(
-                            "1200",
-                            style: GoogleFonts.poppins(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
+                          child: total_penduduk == null
+                              ? CircularProgressIndicator()
+                              : Text(
+                                  "${total_penduduk}",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green,
+                                  ),
+                                ),
                         ),
                         Container(
                           alignment: Alignment.center,
@@ -210,14 +242,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          child: Text(
-                            "800",
-                            style: GoogleFonts.poppins(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.pink,
-                            ),
-                          ),
+                          child: jml_perempuan == null
+                              ? CircularProgressIndicator()
+                              : Text(
+                                  "${jml_perempuan}",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.pink,
+                                  ),
+                                ),
                         ),
                         Container(
                           child: Text(
@@ -245,14 +279,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          child: Text(
-                            "400",
-                            style: GoogleFonts.poppins(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueAccent,
-                            ),
-                          ),
+                          child: jml_laki == null
+                              ? CircularProgressIndicator()
+                              : Text(
+                                  "${jml_laki}",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
                         ),
                         Container(
                           child: Text(
@@ -288,16 +324,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                   Spacer(),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text("See all"),
-                    style: ElevatedButton.styleFrom(
-                      primary: Color(0xFF68b7d8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -307,8 +333,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: ListView.builder(
                 padding: EdgeInsets.only(top: 10),
                 shrinkWrap: true,
-                itemCount: 20,
+                itemCount: data_responden.length,
                 itemBuilder: (context, index) {
+                  var nama = data_responden[index]['nama_kepala_keluarga'];
+                  var rt = data_responden[index]['rt'];
+                  var rw = data_responden[index]['rw'];
+                  var petugas = data_responden[index]['petugas'];
                   return Container(
                     height: size.height * 0.15,
                     width: size.width,
@@ -359,7 +389,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   child: Container(
                                     width: size.width * 0.4,
                                     child: Text(
-                                      'RT 01 / RW 01',
+                                      'RT ${rt} / RW ${rw}',
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal,
@@ -375,7 +405,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   child: Container(
                                     width: size.width * 0.4,
                                     child: Text(
-                                      "Nadine Fakhira",
+                                      "${nama}",
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
@@ -402,7 +432,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   width: 10,
                                 ),
                                 Text(
-                                  "Diinputkan oleh Adrian Kurniawan",
+                                  "Diinputkan oleh ${petugas}",
                                   style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
