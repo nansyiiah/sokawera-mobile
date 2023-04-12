@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
+import 'package:sokaweramobile/Pages/InputScreen/KeteranganKhususPendidikanController.dart';
 import 'InputScreen/KeteranganSosialAnggotaKeluargaController.dart';
 import 'InputScreen/KeteranganTempatController.dart';
 import 'InputScreen/KeteranganRespondenController.dart';
@@ -22,6 +23,7 @@ class _InputScreenState extends State<InputScreen> {
   bool _isFilled1 = false;
   bool _isFilled2 = false;
   bool _isFilled3 = false;
+  bool _isFilled4 = false;
   bool _isFilled = false;
   bool isLoading = false;
   void initState() {
@@ -538,6 +540,75 @@ class _InputScreenState extends State<InputScreen> {
                                                   Spacer(),
                                                   Icon(
                                                     _isFilled3
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KeteranganKhususPendidikanController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Step 4:",
+                                                    style: GoogleFonts.poppins(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Keterangan Khusus Pendidikan",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled4
                                                         ? Icons
                                                             .check_box_outlined
                                                         : Icons

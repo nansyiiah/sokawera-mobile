@@ -167,6 +167,7 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
       var currentList = localStorage.getStringList("nama_anggota") ?? [];
       currentList.add(userEncode);
       await localStorage.setStringList("nama_anggota", currentList);
+      await localStorage.setString('partisipasi', selectedValue6);
       showAlertDialog(context);
     }
   }

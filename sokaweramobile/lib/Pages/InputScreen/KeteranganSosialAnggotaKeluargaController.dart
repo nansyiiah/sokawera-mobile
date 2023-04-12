@@ -198,35 +198,6 @@ class _KeteranganSosialState extends State<KeteranganSosial> {
                 },
               ),
             ),
-            SizedBox(
-              height: size.height * 0.11,
-              width: size.width,
-              child: AbsorbPointer(
-                absorbing: _isFilled ? false : true,
-                child: InkWell(
-                  onTap: () {
-                    // _savedDataToLocal();
-                    print("awikwok");
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                    padding: EdgeInsets.only(
-                        left: 24, right: 24, top: 24, bottom: 24),
-                    decoration: BoxDecoration(
-                      color: _isFilled ? Color(0xFF68b7d8) : Colors.grey,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      "Submit",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
