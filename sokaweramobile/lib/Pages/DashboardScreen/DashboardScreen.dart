@@ -21,20 +21,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
   var jml_laki;
   var jml_perempuan;
   var total_penduduk;
+  var jml_warga_merantau;
+  var jml_anak_sekolah;
+  var jml_warga_hamil;
   List data_responden = [];
-  int _currentIndex = 0;
   var data_res_json = {};
   late List<Widget> _children;
   @override
   void initState() {
-    _currentIndex = 0;
-
-    _children = [
-      DashboardScreen(),
-    ];
+    if (!mounted) return;
     _loadUserData();
+    if (!mounted) return;
     _getLogsData();
+    if (!mounted) return;
     _getSummaryData();
+    if (!mounted) return;
+    _getAnakSekolahData();
+    if (!mounted) return;
+    _getWargaHamilData();
     super.initState();
   }
 
@@ -64,6 +68,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           'petugas': element['petugas']['name'],
         };
         data_responden.add(data_res_json);
+        jml_warga_merantau =
+            element['jumlah_anggota_keluarga_tidak_tinggal_dirumah'];
       });
     }
   }
@@ -75,6 +81,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       jml_laki = jsonData["jml_laki"];
       jml_perempuan = jsonData['jml_perempuan'];
       total_penduduk = jsonData['total_penduduk'];
+    });
+  }
+
+  _getAnakSekolahData() async {
+    var res = await Network().getData('keterangan_sosial/sekolah/count');
+    var jsonData = jsonDecode(res.body);
+    setState(() {
+      jml_anak_sekolah = jsonData['jumlah_anak_sekolah'];
+    });
+  }
+
+  _getWargaHamilData() async {
+    var res = await Network().getData('keterangan_sosial/hamil/count');
+    var jsonData = jsonDecode(res.body);
+    setState(() {
+      jml_warga_hamil = jsonData['jumlah_warga_hamil'];
     });
   }
 
@@ -299,6 +321,187 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               color: Colors.blueAccent,
                             ),
                             textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Container(
+                    child: Text(
+                      "Rincian Data",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: size.height * 0.15,
+                    width: size.width * 0.3,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF867070),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(color: Colors.grey, blurRadius: 3),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(top: 5),
+                          child: jml_anak_sekolah == null
+                              ? Text(
+                                  "0",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                )
+                              : Text(
+                                  "${jml_anak_sekolah}",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                        ),
+                        Container(
+                          // padding: EdgeInsets.only(left: 5),
+                          child: Text(
+                            "Warga yang sedang sekolah",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white.withOpacity(0.75),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Spacer(),
+                  Container(
+                    height: size.height * 0.15,
+                    width: size.width * 0.3,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF8F43EE),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(top: 5),
+                          child: jml_warga_merantau == null
+                              ? Text(
+                                  "0",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                )
+                              : Text(
+                                  "${jml_warga_merantau}",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Warga sedang merantau",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white.withOpacity(0.75),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Spacer(),
+                  Container(
+                    height: size.height * 0.15,
+                    width: size.width * 0.3,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF002B5B),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.only(top: 5),
+                          child: jml_warga_hamil == null
+                              ? Text(
+                                  "0",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                )
+                              : Text(
+                                  "${jml_warga_hamil}",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                        ),
+                        Container(
+                          // padding: EdgeInsets.only(left: 5),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Warga yang sedang hamil",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white.withOpacity(0.75),
+                            ),
                           ),
                         ),
                       ],

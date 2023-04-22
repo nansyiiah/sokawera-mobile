@@ -16,17 +16,6 @@ class DetailInputscreen extends StatefulWidget {
 }
 
 class _DetailInputscreenState extends State<DetailInputscreen> {
-  List list_hubungan_keluarga = [
-    "Kepala Keluarga",
-    "Istri / Suami",
-    "Anak",
-    "Menantu",
-    "Cucu",
-    "Orang Tua / Mertua",
-    "Famili Lain",
-    "Pembantu Rumah Tangga",
-    "Lainnya",
-  ];
   String selectedValue = "Kepala Keluarga";
   String selectedValue2 = "Ya";
   String selectedValue3 = "Laki Laki";
@@ -108,6 +97,16 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
     return menuItems6;
   }
 
+  String selectedValue7 = "Tidak";
+
+  List<DropdownMenuItem<String>> get dropdownItems7 {
+    List<DropdownMenuItem<String>> menuItems7 = [
+      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
+      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
+    ];
+    return menuItems7;
+  }
+
   int nik_kk_local = 0;
   int id_petugas = 0;
   int rt = 0;
@@ -154,6 +153,7 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
       'lapangan_kerja': lapanganKerjaController.text,
       'status_kerja': statusKerjaController.text,
       'id_petugas': id_petugas,
+      'usaha': selectedValue7,
     };
     data_sebelum_append.add(data);
     final userEncode = jsonEncode(data);
@@ -588,6 +588,34 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
                     ),
                   ),
                 ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                textAlign: TextAlign.center,
+                "Apakah memiliki usaha ? ",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Container(
+              width: size.width,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(top: 24),
+              child: DropdownButton(
+                value: selectedValue7,
+                items: dropdownItems7,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedValue7 = newValue!;
+                  });
+                },
               ),
             ),
             SizedBox(

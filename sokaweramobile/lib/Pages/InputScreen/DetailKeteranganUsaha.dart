@@ -8,41 +8,33 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
-class DetailKeteranganPendidikan extends StatefulWidget {
-  final String nama;
-  const DetailKeteranganPendidikan({super.key, required this.nama});
+class DetailKeteranganUsaha extends StatefulWidget {
+  final String nama, nik, nomor_kk;
+  const DetailKeteranganUsaha(
+      {super.key,
+      required this.nama,
+      required this.nik,
+      required this.nomor_kk});
 
   @override
-  State<DetailKeteranganPendidikan> createState() =>
-      _DetailKeteranganPendidikanState();
+  State<DetailKeteranganUsaha> createState() => _DetailKeteranganUsahaState();
 }
 
-class _DetailKeteranganPendidikanState
-    extends State<DetailKeteranganPendidikan> {
+class _DetailKeteranganUsahaState extends State<DetailKeteranganUsaha> {
   var nama;
   var nik;
-  List<String> nama_anggota = [];
+  var nomor_kk;
+  List nama_anggota = [];
 
-  _loadNikFromLocal() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getString('keterangan_tempat');
-    var parsing = jsonDecode(user!);
-    if (user != null) {
-      setState(() {
-        nik = parsing['nomor_kk'];
-      });
-    }
-  }
+  var selectedValue2 = "Tidak";
 
-  TextEditingController jenjangController = TextEditingController();
-  TextEditingController namaSekolahController = TextEditingController();
-  TextEditingController kelasController = TextEditingController();
-  TextEditingController namaSekolahTujuanController = TextEditingController();
-  TextEditingController jumlahBiayaSekolahController = TextEditingController();
-  String selectedValue2 = "Tidak";
-  String selectedValue3 = "Tidak";
-  String selectedValue4 = "Ya";
-  bool isLanjut = true;
+  TextEditingController lokasiUsahaController = TextEditingController();
+  TextEditingController tempatUsahaController = TextEditingController();
+  TextEditingController jumlahKaryawanController = TextEditingController();
+  TextEditingController pekerjaTetapController = TextEditingController();
+  TextEditingController pekerjaKeluargaController = TextEditingController();
+  TextEditingController komoditasController = TextEditingController();
+  TextEditingController omsetPenjualanController = TextEditingController();
 
   List<DropdownMenuItem<String>> get dropdownItems2 {
     List<DropdownMenuItem<String>> menuItems2 = [
@@ -52,32 +44,11 @@ class _DetailKeteranganPendidikanState
     return menuItems2;
   }
 
-  List<DropdownMenuItem<String>> get dropdownItems3 {
-    List<DropdownMenuItem<String>> menuItems3 = [
-      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
-      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
-    ];
-    return menuItems3;
-  }
-
-  List<DropdownMenuItem<String>> get dropdownItems4 {
-    List<DropdownMenuItem<String>> menuItems4 = [
-      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
-      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
-    ];
-    return menuItems4;
-  }
-
-  _getStatus() async {
-    if (selectedValue4 == "Tidak") {
-      setState(() {
-        isLanjut = false;
-      });
-    } else {
-      setState(() {
-        isLanjut = true;
-      });
-    }
+  _deleteLocalKeteranganKesehatanData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.remove("keterangan_usaha");
+    localStorage.remove("detail_keterangan_usaha");
+    Get.to(BottomNavBar());
   }
 
   showAlertDialog(BuildContext context) {
@@ -112,46 +83,42 @@ class _DetailKeteranganPendidikanState
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    _loadNikFromLocal();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     setState(() {
       nama = widget.nama;
+      nik = widget.nik;
+      nomor_kk = widget.nomor_kk;
     });
     TextEditingController namaController = TextEditingController(text: nama);
 
     Size size = MediaQuery.of(context).size;
-    _getStatus();
+
     _savedDataToLocal() async {
       List data_sebelum_append = [];
       var data = {
-        'nama_anggota_keluarga_masih_sekolah': "${namaController.text}",
-        'jenjang_pendidikan_ditempuh': "${jenjangController.text}",
-        'nama_sekolah': "${namaSekolahController.text}",
-        'kelas': "${kelasController.text}",
-        'kost_tidak': selectedValue2,
-        'beasiswa_tidak': selectedValue3,
-        'melanjutkan_sekolah_tidak': selectedValue4,
-        'nama_sekolah_tujuan': "${namaSekolahTujuanController.text}",
-        'jumlah_biaya_sekolah': "${jumlahBiayaSekolahController.text}",
-        'nik_kk': nik,
+        'nama': "${namaController.text}",
+        'nik': "${nik}",
+        'nomor_kk': "${nomor_kk}",
+        'lokasi_usaha': "${lokasiUsahaController.text}",
+        'tempat_usaha': "${tempatUsahaController.text}",
+        'jumlah_karyawan': "${jumlahKaryawanController.text}",
+        'pekerja_tetap_dibayar': "${pekerjaTetapController.text}",
+        'pekerja_keluarga_tdk_dibayar': "${pekerjaKeluargaController.text}",
+        'komoditas': "${komoditasController.text}",
+        'memiliki_IUMK': "${selectedValue2}",
+        'omset_penjualan': "${omsetPenjualanController.text}",
       };
       data_sebelum_append.add(data);
       final userEncode = jsonEncode(data);
       nama_anggota.add(userEncode);
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.setString('keterangan_khusus_pendidikan', userEncode);
-      if (localStorage.getString('keterangan_khusus_pendidikan') != null) {
+      localStorage.setString('keterangan_usaha', userEncode);
+      if (localStorage.getString('keterangan_usaha') != null) {
         var currentList =
-            localStorage.getStringList('detail_keterangan_pendidikan') ?? [];
+            localStorage.getStringList('detail_keterangan_usaha') ?? [];
         currentList.add(userEncode);
         await localStorage.setStringList(
-            'detail_keterangan_pendidikan', currentList);
+            'detail_keterangan_usaha', currentList);
         showAlertDialog(context);
       }
     }
@@ -160,12 +127,13 @@ class _DetailKeteranganPendidikanState
       appBar: AppBar(
         elevation: 2,
         centerTitle: true,
-        title: Text("Keterangan ${widget.nama}"),
+        title: Text("Keterangan ${widget.nama.split(" ")[0]}"),
         backgroundColor: Color(0xFF68b7d8),
         actions: [
           InkWell(
             onTap: () {
               // showDeleteDialog(context);
+              _deleteLocalKeteranganKesehatanData();
             },
             child: Container(
               child: Icon(Icons.delete),
@@ -207,11 +175,11 @@ class _DetailKeteranganPendidikanState
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: jenjangController,
+                controller: lokasiUsahaController,
                 enabled: true,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person),
-                  labelText: 'Jenjang Pendidikan yang sedang ditempuh',
+                  prefixIcon: Icon(Icons.pin_drop_rounded),
+                  labelText: 'Lokasi usaha',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),
@@ -230,11 +198,11 @@ class _DetailKeteranganPendidikanState
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: namaSekolahController,
+                controller: tempatUsahaController,
                 enabled: true,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.person),
-                  labelText: 'Nama Sekolah',
+                  prefixIcon: Icon(Icons.pin_drop_rounded),
+                  labelText: 'Tempat usaha',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),
@@ -253,11 +221,11 @@ class _DetailKeteranganPendidikanState
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: kelasController,
+                controller: jumlahKaryawanController,
                 enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: 'Kelas',
+                  labelText: 'Jumlah Karyawan',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),
@@ -279,7 +247,97 @@ class _DetailKeteranganPendidikanState
               alignment: Alignment.center,
               child: Text(
                 textAlign: TextAlign.center,
-                "Apakah Ngekost ? ",
+                "Pekerja",
+                style: GoogleFonts.poppins(
+                    color: Colors.grey,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      controller: pekerjaTetapController,
+                      decoration: InputDecoration(
+                        labelText: 'Pekerja tetap (Dibayar)',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        const EdgeInsets.only(left: 24, right: 24, top: 24),
+                    child: TextFormField(
+                      controller: pekerjaKeluargaController,
+                      // keyboardType: ,
+                      decoration: InputDecoration(
+                        labelText: 'Pekerja keluarga (Tidak Dibayar)',
+                        labelStyle: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ), // <-- Wrapped in Expanded.
+                ),
+              ],
+            ),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
+              child: TextFormField(
+                controller: komoditasController,
+                enabled: true,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.person),
+                  labelText: 'Komoditas',
+                  labelStyle: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                textAlign: TextAlign.center,
+                "Apakah Memiliki IUMK ? ",
                 style: GoogleFonts.poppins(
                     color: Colors.grey,
                     fontSize: 14,
@@ -300,97 +358,15 @@ class _DetailKeteranganPendidikanState
                 },
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                textAlign: TextAlign.center,
-                "Apakah Pernah Mendapatkan Beasiswa ? (dalam setahun)",
-                style: GoogleFonts.poppins(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400),
-              ),
-            ),
-            Container(
-              width: size.width,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(top: 24),
-              child: DropdownButton(
-                value: selectedValue3,
-                items: dropdownItems3,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedValue3 = newValue!;
-                  });
-                },
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                textAlign: TextAlign.center,
-                "Apakah akan melanjutkan sekolah ?",
-                style: GoogleFonts.poppins(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400),
-              ),
-            ),
-            Container(
-              width: size.width,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(top: 24),
-              child: DropdownButton(
-                value: selectedValue4,
-                items: dropdownItems4,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedValue4 = newValue!;
-                  });
-                },
-              ),
-            ),
-            Visibility(
-              visible: isLanjut ? true : false,
-              child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
-                child: TextFormField(
-                  controller: namaSekolahTujuanController,
-                  enabled: true,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person),
-                    labelText: 'Nama Sekolah Tujuan',
-                    labelStyle: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: jumlahBiayaSekolahController,
+                controller: omsetPenjualanController,
                 enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: 'Jumlah biaya pendidikan selama setahun',
+                  labelText: 'Omset Penjualan',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),

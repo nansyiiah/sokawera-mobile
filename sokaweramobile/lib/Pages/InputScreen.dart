@@ -3,7 +3,11 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
+import 'package:sokaweramobile/Pages/InputScreen/DetailKeteranganKesehatan.dart';
+import 'package:sokaweramobile/Pages/InputScreen/KeteranganKesehatanController.dart';
 import 'package:sokaweramobile/Pages/InputScreen/KeteranganKhususPendidikanController.dart';
+import 'package:sokaweramobile/Pages/InputScreen/KeteranganUsahaController.dart';
+import 'package:sokaweramobile/Pages/InputScreen/PenguasaanTanahController.dart';
 import 'InputScreen/KeteranganSosialAnggotaKeluargaController.dart';
 import 'InputScreen/KeteranganTempatController.dart';
 import 'InputScreen/KeteranganRespondenController.dart';
@@ -24,6 +28,10 @@ class _InputScreenState extends State<InputScreen> {
   bool _isFilled2 = false;
   bool _isFilled3 = false;
   bool _isFilled4 = false;
+  var _isFilled5 = false;
+  var _isFilled6 = false;
+  bool _isFilled7 = false;
+  bool _isFilled8 = false;
   bool _isFilled = false;
   bool isLoading = false;
   void initState() {
@@ -32,7 +40,11 @@ class _InputScreenState extends State<InputScreen> {
     _loadUserData();
     _loadKeteranganTotalData();
     _loadAllDatafromLocal();
-
+    _loadDataKeteranganKhususPendidikan();
+    _getKeteranganKesehatanFromLocal();
+    _getStatusUsaha();
+    _getKeteranganUsahaFromLocal();
+    _loadPenguasaanTanahLocal();
     super.initState();
   }
 
@@ -53,6 +65,10 @@ class _InputScreenState extends State<InputScreen> {
     await _postKeteranganTempatData();
     await _postKeteranganRespondenData();
     await _postKeteranganSosialData();
+    await _postKeteranganKhususPendidikanData();
+    await _postKeteranganKhususKesehatanData();
+    await _postKeteranganUsahaData();
+    await _postPenguasanTanahData();
     setState(() {
       isLoading = false;
     });
@@ -67,6 +83,32 @@ class _InputScreenState extends State<InputScreen> {
       });
     } else {
       return null;
+    }
+  }
+
+  _postPenguasanTanahData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var penguasaan_tanah = localStorage.getString('penguasaan_tanah');
+    var parsing = jsonDecode(penguasaan_tanah!);
+    var data = {
+      'jenis_lahan': parsing['jenis_lahan'],
+      'nomor_urut_bidang': parsing['nomor_urut_bidang'],
+      'lokasi_lahan': parsing['lokasi_lahan'],
+      'nomor_blok_tanah': parsing['nomor_blok_tanah'],
+      'tanah_bersertifikat': parsing['tanah_bersertifikat'],
+      'nama_sppt_sesuai': parsing['nama_sppt_sesuai'],
+      'lahan_dimiliki': parsing['lahan_dimiliki'],
+      'lahan_pihak_lain': parsing['lahan_pihak_lain'],
+      'lahan_berada_pihak_lain': parsing['lahan_berada_pihak_lain'],
+      'lahan_dikuasai': parsing['lahan_dikuasai'],
+      'nomor_kk': parsing['nomor_kk'],
+    };
+    var res = await Network().store(data, 'penguasaan_tanah');
+    var body = json.decode(res.body);
+    if (body["status"] == 200) {
+      print("sukses insert penguasaan tanah");
+    } else {
+      print("error penguasaan tanah");
     }
   }
 
@@ -91,6 +133,8 @@ class _InputScreenState extends State<InputScreen> {
     var body = json.decode(res.body);
     if (body["status"] == 200) {
       print("sukses insert keterangan tempat");
+    } else {
+      print("error tempat");
     }
   }
 
@@ -170,7 +214,7 @@ class _InputScreenState extends State<InputScreen> {
     if (body["status"] == 200) {
       print("sukses insert keterangan responden");
     } else {
-      print(body);
+      print("error responden");
     }
   }
 
@@ -204,11 +248,106 @@ class _InputScreenState extends State<InputScreen> {
         if (body["status"] == 200) {
           print("sukses insert keterangan sosial");
         } else {
-          print("error");
+          print("error sosial");
         }
       }
     }
   }
+
+  _postKeteranganKhususPendidikanData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var keterangan_pendidikan =
+        localStorage.getStringList('detail_keterangan_pendidikan');
+    if (keterangan_pendidikan != null) {
+      for (var element in keterangan_pendidikan) {
+        var parsing = jsonDecode(element);
+        var data = {
+          'nama_anggota_keluarga_masih_sekolah':
+              parsing['nama_anggota_keluarga_masih_sekolah'],
+          'jenjang_pendidikan_ditempuh': parsing['jenjang_pendidikan_ditempuh'],
+          'nama_sekolah': parsing['nama_sekolah'],
+          'kelas': parsing['kelas'],
+          'kost_tidak': parsing['kost_tidak'],
+          'beasiswa_tidak': parsing['beasiswa_tidak'],
+          'melanjutkan_sekolah_tidak': parsing['melanjutkan_sekolah_tidak'],
+          'nama_sekolah_tujuan': parsing['nama_sekolah_tujuan'],
+          'jumlah_biaya_sekolah': parsing['jumlah_biaya_sekolah'],
+          'nik_kk': parsing['nik_kk'],
+        };
+        var res = await Network().store(data, 'keterangan_khusus_pendidikan');
+        var body = json.decode(res.body);
+        if (body['status'] == 200) {
+          print("sukses insert keterangan khusus pendidikan");
+        } else {
+          print("error pendidikan");
+        }
+      }
+    }
+  }
+
+  _postKeteranganUsahaData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var keterangan_usaha =
+        localStorage.getStringList('detail_keterangan_usaha') ?? [];
+    // var parsing = jsonDecode(keterangan_usaha!);
+    for (var element in keterangan_usaha) {
+      var parsing = jsonDecode(element);
+      var data = {
+        'nama': parsing['nama'],
+        'nik': parsing['nik'],
+        'nomor_kk': parsing['nomor_kk'],
+        'lokasi_usaha': parsing['lokasi_usaha'],
+        'tempat_usaha': parsing['tempat_usaha'],
+        'jumlah_karyawan': parsing['jumlah_karyawan'],
+        'pekerja_tetap_dibayar': parsing['pekerja_tetap_dibayar'],
+        'pekerja_keluarga_tdk_dibayar': parsing['pekerja_keluarga_tdk_dibayar'],
+        'komoditas': parsing['komoditas'],
+        'memiliki_IUMK': parsing['memiliki_IUMK'],
+        'omset_penjualan': parsing['omset_penjualan'],
+      };
+      var res = await Network().store(data, 'keterangan_usaha');
+      var body = json.decode(res.body);
+      if (body["status"] == 200) {
+        print("sukses insert keterangan usaha");
+      } else {
+        print("error usaha");
+      }
+    }
+  }
+
+  _postKeteranganKhususKesehatanData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var keterangan_kesehatan =
+        localStorage.getStringList('detail_keterangan_khusus_kesehatan') ?? [];
+    if (keterangan_kesehatan != null) {
+      for (var element in keterangan_kesehatan) {
+        var parsing = jsonDecode(element);
+        var data = {
+          'nama': parsing["nama"],
+          'penyakit': parsing["penyakit"],
+          'jenis_cacat': parsing['jenis_cacat'],
+          'jumlah_hari_opname': parsing['jumlah_hari_opname'],
+          'keluhan_kesehatan': parsing['keluhan_kesehatan'],
+          'pernah_terpapar_covid': parsing['pernah_terpapar_covid'],
+          'tempat_karantina_covid': parsing['tempat_karantina_covid'],
+          'jenis_keluhan_covid': parsing['jenis_keluhan_covid'],
+          'sudah_vaksin_covid': parsing['sudah_vaksin_covid'],
+          'biaya_kesehatan': parsing['biaya_kesehatan'],
+          'nik': parsing['nik'],
+          'nomor_kk': parsing['nomor_kk'],
+        };
+        var res = await Network().store(data, 'keterangan_kesehatan');
+        var body = json.decode(res.body);
+        if (body['status'] == 200) {
+          print("sukses insert keterangan khusus kesehatan");
+        } else {
+          print(body);
+        }
+      }
+    }
+  }
+
+  var list_nama = [];
 
   _getKeteranganRespondenFromLocal() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
@@ -223,12 +362,47 @@ class _InputScreenState extends State<InputScreen> {
     }
   }
 
+  _getKeteranganKesehatanFromLocal() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var data =
+        localStorage.getStringList("detail_keterangan_khusus_kesehatan") ?? [];
+    if (data.length == total_data) {
+      setState(() {
+        _isFilled5 = true;
+      });
+    } else {
+      setState(() {
+        _isFilled5 = false;
+      });
+    }
+  }
+
+  _getKeteranganUsahaFromLocal() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var data = localStorage.getStringList("detail_keterangan_usaha");
+    if (data != null) {
+      setState(() {
+        _isFilled6 = true;
+      });
+    }
+  }
+
+  var isHaveUsaha = false;
+
   _loadAllDatafromLocal() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = localStorage.getStringList("nama_anggota");
     if (user != null) {
       for (var element in user) {
         var parsing = jsonDecode(element);
+        if (parsing["usaha"] == "Ya") {
+          var data = {
+            'nama': parsing['nama'],
+            'nik': parsing['nik'],
+            'nomor_kk': parsing['nik_kk']
+          };
+          list_nama.add(data);
+        }
         if (user.length == total_data) {
           setState(() {
             _isFilled3 = true;
@@ -239,6 +413,54 @@ class _InputScreenState extends State<InputScreen> {
           });
         }
       }
+    }
+  }
+
+  var _isHaveLuasPanen = false;
+
+  _loadPenguasaanTanahLocal() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getString('penguasaan_tanah');
+    var parsing = jsonDecode(user!);
+    if (user != null) {
+      if (parsing["jenis_lahan"] != "Lahan tempat tinggal") {
+        setState(() {
+          _isHaveLuasPanen = true;
+        });
+      } else {
+        setState(() {
+          _isHaveLuasPanen = false;
+        });
+      }
+      setState(() {
+        _isFilled7 = true;
+      });
+    } else {
+      setState(() {
+        _isFilled7 = false;
+      });
+    }
+  }
+
+  _loadDataKeteranganKhususPendidikan() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getStringList('detail_keterangan_pendidikan');
+    if (user != null) {
+      setState(() {
+        _isFilled4 = true;
+      });
+    }
+  }
+
+  _getStatusUsaha() async {
+    if (list_nama.isNotEmpty) {
+      setState(() {
+        isHaveUsaha = true;
+      });
+    } else {
+      setState(() {
+        isHaveUsaha = false;
+      });
     }
   }
 
@@ -259,7 +481,13 @@ class _InputScreenState extends State<InputScreen> {
   }
 
   _getStatusIsFilled() async {
-    if (_isFilled1 == true && _isFilled2 == true && _isFilled3 == true) {
+    if (_isFilled1 == true &&
+        _isFilled2 == true &&
+        _isFilled3 == true &&
+        _isFilled4 == true &&
+        _isFilled5 == true &&
+        _isFilled6 == true &&
+        _isFilled7 == true) {
       setState(() {
         _isFilled = true;
       });
@@ -273,6 +501,7 @@ class _InputScreenState extends State<InputScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    _getKeteranganUsahaFromLocal();
     _getStatusIsFilled();
     return Scaffold(
       backgroundColor: Color(0xFF68b7d8),
@@ -291,7 +520,7 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
             Container(
-              height: size.height * 1,
+              height: size.height * 5,
               width: size.width,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -387,13 +616,13 @@ class _InputScreenState extends State<InputScreen> {
                                           children: [
                                             Row(
                                               children: [
-                                                Text(
-                                                  "Step 1:",
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
+                                                // Text(
+                                                //   "Step 1:",
+                                                //   style: GoogleFonts.poppins(
+                                                //     fontSize: 14,
+                                                //     fontWeight: FontWeight.w400,
+                                                //   ),
+                                                // ),
                                                 Spacer(),
                                                 Text(
                                                   "Keterangan Tempat",
@@ -456,14 +685,14 @@ class _InputScreenState extends State<InputScreen> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Text(
-                                                    "Step 2:",
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
+                                                  // Text(
+                                                  //   "Step 2:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
                                                   Spacer(),
                                                   Text(
                                                     "Keterangan Responden",
@@ -521,14 +750,14 @@ class _InputScreenState extends State<InputScreen> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Text(
-                                                    "Step 3:",
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
+                                                  // Text(
+                                                  //   "Step 3:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
                                                   Spacer(),
                                                   Text(
                                                     "Keterangan Sosial Anggota Keluarga",
@@ -590,14 +819,14 @@ class _InputScreenState extends State<InputScreen> {
                                             children: [
                                               Row(
                                                 children: [
-                                                  Text(
-                                                    "Step 4:",
-                                                    style: GoogleFonts.poppins(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
+                                                  // Text(
+                                                  //   "Step 4:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
                                                   Spacer(),
                                                   Text(
                                                     "Keterangan Khusus Pendidikan",
@@ -621,42 +850,453 @@ class _InputScreenState extends State<InputScreen> {
                                         ),
                                       ),
                                     ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KeteranganKhususPendidikanController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 5:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Kejadian Kelahiran",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled4
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KeteranganKhususPendidikanController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 6:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Kejadian Kematian",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled4
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KeteranganKesehatanController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 7:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Keterangan Khusus Kesehatan",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled5
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: isHaveUsaha ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KeteranganUsahaController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 8:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Keterangan Usaha",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled6
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PenguasaanTanahController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 7:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Penguasaan Tanah / Lahan Keluarga",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled7
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: _isHaveLuasPanen ? true : false,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KeteranganUsahaController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 8:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Luas Panen",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled8
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     SizedBox(
                                       height: size.height * 0.2,
                                     ),
                                     SizedBox(
                                       height: size.height * 0.11,
                                       width: size.width,
-                                      child: AbsorbPointer(
-                                        absorbing: _isFilled ? false : true,
-                                        child: InkWell(
-                                          onTap: () async {
-                                            setState(() {
-                                              isLoading = true;
-                                            });
-                                            _postAllData();
-                                          },
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            margin: EdgeInsets.only(
-                                                left: 24, right: 24, top: 40),
-                                            padding: EdgeInsets.only(
-                                                left: 24,
-                                                right: 24,
-                                                top: 14,
-                                                bottom: 14),
-                                            decoration: BoxDecoration(
-                                              color: _isFilled
-                                                  ? Color(0xFF68b7d8)
-                                                  : Colors.grey,
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                            ),
-                                            child: Text(
-                                              "Submit",
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white,
-                                              ),
+                                      child: InkWell(
+                                        onTap: () async {
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+                                          await _postAllData();
+                                        },
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          margin: EdgeInsets.only(
+                                              left: 24, right: 24, top: 40),
+                                          padding: EdgeInsets.only(
+                                              left: 24,
+                                              right: 24,
+                                              top: 14,
+                                              bottom: 14),
+                                          decoration: BoxDecoration(
+                                            color: _isFilled
+                                                ? Color(0xFF68b7d8)
+                                                : Colors.grey,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Text(
+                                            "Submit",
+                                            style: GoogleFonts.poppins(
+                                              color: Colors.white,
                                             ),
                                           ),
                                         ),
