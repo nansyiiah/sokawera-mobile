@@ -4,9 +4,13 @@ import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/InputScreen/DetailKeteranganKesehatan.dart';
+import 'package:sokaweramobile/Pages/InputScreen/KepemilikanAsetController.dart';
 import 'package:sokaweramobile/Pages/InputScreen/KeteranganKesehatanController.dart';
 import 'package:sokaweramobile/Pages/InputScreen/KeteranganKhususPendidikanController.dart';
+import 'package:sokaweramobile/Pages/InputScreen/KeteranganPerumahanController.dart';
 import 'package:sokaweramobile/Pages/InputScreen/KeteranganUsahaController.dart';
+import 'package:sokaweramobile/Pages/InputScreen/LuasPanenController.dart';
+import 'package:sokaweramobile/Pages/InputScreen/PenguasaanHewanTernakController.dart';
 import 'package:sokaweramobile/Pages/InputScreen/PenguasaanTanahController.dart';
 import 'InputScreen/KeteranganSosialAnggotaKeluargaController.dart';
 import 'InputScreen/KeteranganTempatController.dart';
@@ -32,6 +36,8 @@ class _InputScreenState extends State<InputScreen> {
   var _isFilled6 = false;
   bool _isFilled7 = false;
   bool _isFilled8 = false;
+  bool _isFilled9 = false;
+  bool _isFilled10 = false;
   bool _isFilled = false;
   bool isLoading = false;
   void initState() {
@@ -45,6 +51,9 @@ class _InputScreenState extends State<InputScreen> {
     _getStatusUsaha();
     _getKeteranganUsahaFromLocal();
     _loadPenguasaanTanahLocal();
+    _laodDataLuasPanen();
+    _loadKeteranganPerumahanData();
+    _loadKepemilikanAsetData();
     super.initState();
   }
 
@@ -69,6 +78,9 @@ class _InputScreenState extends State<InputScreen> {
     await _postKeteranganKhususKesehatanData();
     await _postKeteranganUsahaData();
     await _postPenguasanTanahData();
+    await _postLuasPanenData();
+    await _postKeteranganPerumahanData();
+    await _postKepemilikanAsetData();
     setState(() {
       isLoading = false;
     });
@@ -83,6 +95,34 @@ class _InputScreenState extends State<InputScreen> {
       });
     } else {
       return null;
+    }
+  }
+
+  _loadKeteranganPerumahanData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getString("keterangan_perumahan");
+    if (user != null) {
+      setState(() {
+        _isFilled9 = true;
+      });
+    } else {
+      setState(() {
+        _isFilled9 = false;
+      });
+    }
+  }
+
+  _loadKepemilikanAsetData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getString("kepemilikan_aset");
+    if (user != null) {
+      setState(() {
+        _isFilled10 = true;
+      });
+    } else {
+      setState(() {
+        _isFilled10 = false;
+      });
     }
   }
 
@@ -109,6 +149,64 @@ class _InputScreenState extends State<InputScreen> {
       print("sukses insert penguasaan tanah");
     } else {
       print("error penguasaan tanah");
+    }
+  }
+
+  _postKepemilikanAsetData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var kepemilikan_aset = localStorage.getString("kepemilikan_aset");
+    var parsing = jsonDecode(kepemilikan_aset!);
+    var data = {
+      'ac': parsing['ac'],
+      'kulkas': parsing['kulkas'],
+      'mesin_cuci': parsing['mesin_cuci'],
+      'televisi': parsing['televisi'],
+      'komputer_laptop': parsing['komputer_laptop'],
+      'mobil': parsing['mobil'],
+      'motor': parsing['motor'],
+      'sepeda': parsing['sepeda'],
+      'nomor_kk': parsing['nomor_kk'],
+    };
+    var res = await Network().store(data, 'kepemilikan_aset');
+    var body = json.decode(res.body);
+    if (body["status"] == 200) {
+      print("sukses insert kepemilikan aset");
+    } else {
+      print(body);
+    }
+  }
+
+  _postKeteranganPerumahanData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var keterangan_perumahan = localStorage.getString("keterangan_perumahan");
+    var parsing = jsonDecode(keterangan_perumahan!);
+    var data = {
+      'status_penggunaan_bangunan_tempat_tinggal':
+          parsing['status_penggunaan_bangunan_tempat_tinggal'],
+      'status_lahan_bangunan_tempat_tinggal':
+          parsing['status_lahan_bangunan_tempat_tinggal'],
+      'jumlah_kk_tinggal_dibangunan': parsing['jumlah_kk_tinggal_dibangunan'],
+      'luas_lantai': parsing['luas_lantai'],
+      'jenis_lantai_terluas': parsing['jenis_lantai_terluas'],
+      'jenis_dinding_terluas': parsing['jenis_dinding_terluas'],
+      'jumlah_ruangan_seluruhnya': parsing['jumlah_ruangan_seluruhnya'],
+      'sumber_air_minum': parsing['sumber_air_minum'],
+      'sumber_penerangan_utama': parsing['sumber_penerangan_utama'],
+      'daya_terpasang': parsing['daya_terpasang'],
+      'bahan_bakar_utama_memasak': parsing['bahan_bakar_utama_memasak'],
+      'penggunaan_fasilitas_tempat_bab':
+          parsing['penggunaan_fasilitas_tempat_bab'],
+      'jenis_kloset': parsing['jenis_kloset'],
+      'tempat_pembuangan_akhir_tinja': parsing['tempat_pembuangan_akhir_tinja'],
+      'jumlah_fasilitas_cuci_tangan': parsing['jumlah_fasilitas_cuci_tangan'],
+      'nomor_kk': parsing['nomor_kk'],
+    };
+    var res = await Network().store(data, 'keterangan_perumahan');
+    var body = json.decode(res.body);
+    if (body["status"] == 200) {
+      print("sukses insert keterangan perumahan");
+    } else {
+      print("error keterangan_perumahan");
     }
   }
 
@@ -315,6 +413,28 @@ class _InputScreenState extends State<InputScreen> {
     }
   }
 
+  _postLuasPanenData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var luas_panen = localStorage.getStringList("detail_luas_panen") ?? [];
+    for (var element in luas_panen) {
+      var parsing = jsonDecode(element);
+      var data = {
+        'jenis_tanaman': parsing['jenis_tanaman'],
+        'frekuensi_panen': parsing['frekuensi_panen'],
+        'luas_panen': parsing['luas_panen'],
+        'produksi': parsing['produksi'],
+        'nomor_kk': parsing['nomor_kk'],
+      };
+      var res = await Network().store(data, "luas_panen");
+      var body = json.decode(res.body);
+      if (body["status"] == 200) {
+        print("sukses insert luas panen");
+      } else {
+        print("error luas panen");
+      }
+    }
+  }
+
   _postKeteranganKhususKesehatanData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var keterangan_kesehatan =
@@ -448,6 +568,16 @@ class _InputScreenState extends State<InputScreen> {
     if (user != null) {
       setState(() {
         _isFilled4 = true;
+      });
+    }
+  }
+
+  _laodDataLuasPanen() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getStringList("detail_luas_panen");
+    if (user != null) {
+      setState(() {
+        _isFilled8 = true;
       });
     }
   }
@@ -1203,7 +1333,7 @@ class _InputScreenState extends State<InputScreen> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  KeteranganUsahaController(),
+                                                  LuasPanenController(),
                                             ),
                                           );
                                         },
@@ -1252,6 +1382,213 @@ class _InputScreenState extends State<InputScreen> {
                                                   Spacer(),
                                                   Icon(
                                                     _isFilled8
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KeteranganPerumahanController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 7:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Keterangan Perumahan",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled9
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  KepemilikanAsetController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 7:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Kepemilikan Aset",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled10
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PenguasaanHewanTernakController(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 7:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Penguasaan Hewan Ternak",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled10
                                                         ? Icons
                                                             .check_box_outlined
                                                         : Icons
