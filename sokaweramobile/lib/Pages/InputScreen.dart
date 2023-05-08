@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/InputScreen/DetailKeteranganKesehatan.dart';
+import 'package:sokaweramobile/Pages/InputScreen/DetailKuisionerPembangunan.dart';
 import 'package:sokaweramobile/Pages/InputScreen/KepemilikanAsetController.dart';
 import 'package:sokaweramobile/Pages/InputScreen/KeteranganKesehatanController.dart';
 import 'package:sokaweramobile/Pages/InputScreen/KeteranganKhususPendidikanController.dart';
@@ -38,6 +39,7 @@ class _InputScreenState extends State<InputScreen> {
   bool _isFilled8 = false;
   bool _isFilled9 = false;
   bool _isFilled10 = false;
+  bool _isFilled11 = false;
   bool _isFilled = false;
   bool isLoading = false;
   void initState() {
@@ -54,6 +56,8 @@ class _InputScreenState extends State<InputScreen> {
     _laodDataLuasPanen();
     _loadKeteranganPerumahanData();
     _loadKepemilikanAsetData();
+    _loadPenguasaanHewanTernak();
+    _loadKuisioner();
     super.initState();
   }
 
@@ -81,6 +85,8 @@ class _InputScreenState extends State<InputScreen> {
     await _postLuasPanenData();
     await _postKeteranganPerumahanData();
     await _postKepemilikanAsetData();
+    await _postKepemilikanHewanTernak();
+    await _postKuisioner();
     setState(() {
       isLoading = false;
     });
@@ -92,6 +98,18 @@ class _InputScreenState extends State<InputScreen> {
     if (user != null) {
       setState(() {
         total_data = user;
+      });
+    } else {
+      return null;
+    }
+  }
+
+  _loadPenguasaanHewanTernak() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getString("penguasaan_hewan_ternak");
+    if (user != null) {
+      setState(() {
+        _isFilled11 = true;
       });
     } else {
       return null;
@@ -112,6 +130,22 @@ class _InputScreenState extends State<InputScreen> {
     }
   }
 
+  bool _isFilled12 = false;
+
+  _loadKuisioner() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getString("eval_pembangunan");
+    if (user != null) {
+      setState(() {
+        _isFilled12 = true;
+      });
+    } else {
+      setState(() {
+        _isFilled12 = false;
+      });
+    }
+  }
+
   _loadKepemilikanAsetData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = localStorage.getString("kepemilikan_aset");
@@ -123,6 +157,46 @@ class _InputScreenState extends State<InputScreen> {
       setState(() {
         _isFilled10 = false;
       });
+    }
+  }
+
+  _postKuisioner() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var eval_pembangunan = localStorage.getString("eval_pembangunan");
+    var parsing = jsonDecode(eval_pembangunan!);
+    var data = {
+      'nomor_kk': parsing['nomor_kk'],
+      'mengetahui_rpjm_desa': parsing['mengetahui_rpjm_desa'],
+      'mengetahui_rkp_desa': parsing['mengetahui_rkp_desa'],
+      'mengetahui_musrenbangdes': parsing['mengetahui_musrenbangdes'],
+      'manfaat_bltdd': parsing['manfaat_bltdd'],
+      'keluarga_penerima_bltdd': parsing['keluarga_penerima_bltdd'],
+      'pembangunan_tahun_anggaran': parsing['pembangunan_tahun_anggaran'],
+      'pelayanan_administrasi': parsing['pelayanan_administrasi'],
+      'penyebab_point_7': parsing['penyebab_point_7'],
+      'kepuasan_pelayanan_umum': parsing['kepuasan_pelayanan_umum'],
+      'penyebab_point_10': parsing['penyebab_point_10'],
+      'kegiatan_pemerintah_desa': parsing['kegiatan_pemerintah_desa'],
+      'perbaikan_mendasar_pemerintah_desa':
+          parsing['perbaikan_mendasar_pemerintah_desa'],
+      'penyebab_point_14': parsing['penyebab_point_14'],
+      'jml_anggota_keluarga_mengikuti':
+          parsing['jml_anggota_keluarga_mengikuti'],
+      'prioritas_pembangunan': parsing['prioritas_pembangunan'],
+      'alasan_memilih_prioritas_itu': parsing['alasan_memilih_prioritas_itu'],
+      'jml_anggota_keluarga_korban_kejahatan':
+          parsing['jml_anggota_keluarga_korban_kejahatan'],
+      'jenis_korban_kejahatan': parsing['jenis_korban_kejahatan'],
+      'jml_anggota_keluarga_korban_bencana':
+          parsing['jml_anggota_keluarga_korban_bencana'],
+      'jenis_bencana_alam': parsing['jenis_bencana_alam'],
+    };
+    var res = await Network().store(data, 'eval_pembangunan');
+    var body = json.decode(res.body);
+    if (body["status"] == 200) {
+      print("sukses insert kuisioner");
+    } else {
+      print("error insert kuisioner");
     }
   }
 
@@ -152,6 +226,42 @@ class _InputScreenState extends State<InputScreen> {
     }
   }
 
+  _postKepemilikanHewanTernak() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var penguasaan_ternak = localStorage.getStringList("detail_hewan_ternak");
+    for (var element in penguasaan_ternak!) {
+      var parsing = jsonDecode(element);
+      var data = {
+        'jenis_ternak': parsing['jenis_ternak'],
+        'jumlah_ternak_dimiliki': parsing['jumlah_ternak_dimiliki'],
+        'jumlah_ternak_dimiliki_jantan':
+            parsing['jumlah_ternak_dimiliki_jantan'],
+        'jumlah_ternak_dimiliki_betina':
+            parsing['jumlah_ternak_dimiliki_betina'],
+        'jumlah_ternak_pihak_lain': parsing['jumlah_ternak_pihak_lain'],
+        'jumlah_ternak_pihak_lain_jantan':
+            parsing['jumlah_ternak_pihak_lain_jantan'],
+        'jumlah_ternak_pihak_lain_betina':
+            parsing['jumlah_ternak_pihak_lain_betina'],
+        'jumlah_ternak_berada_dipihak_lain':
+            parsing['jumlah_ternak_berada_dipihak_lain'],
+        'jumlah_ternak_berada_dipihak_lain_jantan':
+            parsing['jumlah_ternak_berada_dipihak_lain_jantan'],
+        'jumlah_ternak_berada_dipihak_lain_betina':
+            parsing['jumlah_ternak_berada_dipihak_lain_betina'],
+        'jumlah_ternak_dikuasai': parsing['jumlah_ternak_dikuasai'],
+        'nomor_kk': parsing['nomor_kk'],
+      };
+      var res = await Network().store(data, 'kepemilikan_hewan');
+      var body = json.decode(res.body);
+      if (body["status"] == 200) {
+        print("sukses insert kepemilikan hewan");
+      } else {
+        print("error kepemilikan hewan");
+      }
+    }
+  }
+
   _postKepemilikanAsetData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var kepemilikan_aset = localStorage.getString("kepemilikan_aset");
@@ -172,7 +282,7 @@ class _InputScreenState extends State<InputScreen> {
     if (body["status"] == 200) {
       print("sukses insert kepemilikan aset");
     } else {
-      print(body);
+      print("error insert kepemilikan aset");
     }
   }
 
@@ -461,7 +571,7 @@ class _InputScreenState extends State<InputScreen> {
         if (body['status'] == 200) {
           print("sukses insert keterangan khusus kesehatan");
         } else {
-          print(body);
+          print("error khusus kesehatan");
         }
       }
     }
@@ -633,6 +743,7 @@ class _InputScreenState extends State<InputScreen> {
     Size size = MediaQuery.of(context).size;
     _getKeteranganUsahaFromLocal();
     _getStatusIsFilled();
+    // _postKepemilikanHewanTernak();
     return Scaffold(
       backgroundColor: Color(0xFF68b7d8),
       body: SingleChildScrollView(
@@ -1588,7 +1699,76 @@ class _InputScreenState extends State<InputScreen> {
                                                   ),
                                                   Spacer(),
                                                   Icon(
-                                                    _isFilled10
+                                                    _isFilled11
+                                                        ? Icons
+                                                            .check_box_outlined
+                                                        : Icons
+                                                            .check_box_outline_blank,
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    AbsorbPointer(
+                                      absorbing: _isFilled3 ? false : true,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DetailKuisionerPembangunan(),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.06,
+                                          margin: EdgeInsets.only(
+                                            left: 24,
+                                            right: 24,
+                                            top: 24,
+                                          ),
+                                          padding: EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          alignment: Alignment.center,
+                                          width: size.width,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 0.3,
+                                                color: Colors.grey,
+                                              )
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  // Text(
+                                                  //   "Step 7:",
+                                                  //   style: GoogleFonts.poppins(
+                                                  //     fontSize: 14,
+                                                  //     fontWeight:
+                                                  //         FontWeight.w400,
+                                                  //   ),
+                                                  // ),
+                                                  Spacer(),
+                                                  Text(
+                                                    "Kuisioner",
+                                                    style: GoogleFonts.poppins(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                  Spacer(),
+                                                  Icon(
+                                                    _isFilled11
                                                         ? Icons
                                                             .check_box_outlined
                                                         : Icons
