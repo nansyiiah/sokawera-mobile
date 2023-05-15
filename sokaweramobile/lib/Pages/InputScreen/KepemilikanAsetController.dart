@@ -172,6 +172,12 @@ class _KepemilikanAsetControllerState extends State<KepemilikanAsetController> {
     );
   }
 
+  _deleteLocalKepemilikanAsetData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.remove("kepemilikan_aset");
+    Get.to(BottomNavBar());
+  }
+
   _savedDataToLocal() async {
     var data = {
       'ac': selectedValue1,
@@ -202,7 +208,7 @@ class _KepemilikanAsetControllerState extends State<KepemilikanAsetController> {
         actions: [
           InkWell(
             onTap: () {
-              // showDeleteDialog(context);
+              _deleteLocalKepemilikanAsetData();
             },
             child: Container(
               child: Icon(Icons.delete),

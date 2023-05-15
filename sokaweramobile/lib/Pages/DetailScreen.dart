@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:sokaweramobile/Models/data_keterangan_responden_id.dart';
 import 'package:http/http.dart' as http;
 import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/DashboardScreen/DashboardScreen.dart';
+import 'package:sokaweramobile/Pages/DetailPages/DetailAllData.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -22,11 +24,14 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   List data = [];
+  late Future myFuture;
   var anak = {};
+  var id;
   var nama = "";
   var nik_kk = "";
   var nama_laki = [];
   var nama_perempuan = [];
+  var dusun, no_urut_rumah, rt, rw, nama_jalan;
 
   _deleteData(nik) async {
     var response = await Network().deleteDataNik(nik);
@@ -38,7 +43,7 @@ class _DetailScreenState extends State<DetailScreen> {
     }
   }
 
-  Future _fetchData(id) async {
+  _fetchData(id) async {
     var response = await http.get(
         Uri.parse("http://babygru.tech/api/keterangan_responden/${id}"),
         headers: {
@@ -64,17 +69,39 @@ class _DetailScreenState extends State<DetailScreen> {
 
       data.add(anak);
     }
+    // _loadData(widget.item);
     return data;
+  }
+
+  void initState() {
+// TODO: implement initState
+
+    _loadData(widget.item);
+    myFuture = _fetchData(widget.item);
+    super.initState();
+  }
+
+  _loadData(id) async {
+    var res = await Network().getData('keterangan_tempat/${id}');
+    var jsonData = jsonDecode(res.body);
+    setState(() {
+      nama_jalan = jsonData["keterangan_tempat"]["nama_jalan"];
+      rt = jsonData["keterangan_tempat"]["rt"];
+      rw = jsonData["keterangan_tempat"]["rw"];
+      dusun = jsonData["keterangan_tempat"]["dusun"];
+      no_urut_rumah = jsonData["keterangan_tempat"]['nomor_urut_rumah'];
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    // _loadData(widget.item);
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.93),
       body: SingleChildScrollView(
         child: FutureBuilder(
-          future: _fetchData(widget.item),
+          future: myFuture,
           builder: (context, snapshot) {
             if (snapshot.hasData == false) {
               return Center(
@@ -87,6 +114,8 @@ class _DetailScreenState extends State<DetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       InkWell(
                         onTap: () {
@@ -119,48 +148,118 @@ class _DetailScreenState extends State<DetailScreen> {
                       ),
                     ],
                   ),
-                  Center(
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: size.height * 0.15,
-                      width: size.width * 0.3,
-                      margin: EdgeInsets.only(
-                          left: 20, right: 20, top: 30, bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF68b7d8),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(blurRadius: 3, color: Colors.grey)
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.person,
-                        size: 70,
-                        color: Colors.white,
-                      ),
+                  Container(
+                    height: size.height * 0.15,
+                    width: size.width,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(40),
                     ),
-                  ),
-                  Center(
-                    child: Container(
-                      child: Text(
-                        "${nama}",
-                        style: GoogleFonts.poppins(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                    margin: EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        Center(
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: size.height * 0.1,
+                            width: size.width * 0.2,
+                            margin: EdgeInsets.only(
+                                left: 24, right: 20, top: 30, bottom: 20),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF68b7d8),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Container(
-                      child: Text(
-                        "${nik_kk}",
-                        style: GoogleFonts.poppins(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black.withOpacity(0.3),
+                        Expanded(
+                          child: Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(top: 25),
+                                  child: Text(
+                                    "${nama}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  // margin: EdgeInsets.only(right: 20),
+                                  child: Text(
+                                    "${nama_jalan}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(bottom: 5),
+                                  child: Text(
+                                    "${nik_kk}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black.withOpacity(0.3),
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 23,
+                                      width: 70,
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text(
+                                          "RT: ${rt}",
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(50.0),
+                                          ),
+                                          backgroundColor: Color(0xFF68b7d8),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    SizedBox(
+                                      height: 23,
+                                      width: 70,
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text(
+                                          "RW: ${rw}",
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(50.0),
+                                          ),
+                                          backgroundColor: Color(0xFF68b7d8),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                   SizedBox(
@@ -176,7 +275,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           width: size.width * 0.35,
                           margin: EdgeInsets.only(left: 45),
                           decoration: BoxDecoration(
-                            color: Color(0xFF68b7d8).withOpacity(0.4),
+                            color: Color(0xFF68b7d8),
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Column(
@@ -254,6 +353,56 @@ class _DetailScreenState extends State<DetailScreen> {
                   SizedBox(
                     height: 20,
                   ),
+                  InkWell(
+                    onTap: () {
+                      Get.to(DetailAllData(
+                        name: nama,
+                        nik: nik_kk,
+                      ));
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 24,
+                      ),
+                      height: size.height * 0.055,
+                      width: size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          BoxShadow(color: Colors.grey, blurRadius: 1),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 25),
+                            child: Text(
+                              "Detail semua data",
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          Spacer(),
+                          Container(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Icon(
+                              Icons.keyboard_arrow_right_sharp,
+                              color: Colors.grey,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Container(
                     margin: EdgeInsets.only(left: 25),
                     child: Text(
@@ -277,10 +426,6 @@ class _DetailScreenState extends State<DetailScreen> {
                             shrinkWrap: true,
                             itemCount: data.length,
                             itemBuilder: (context, index) {
-                              // var nama = rtList[index]["nama_kepala_keluarga"];
-                              // var rt = rtList[index]["rt"];
-                              // var nik = rtList[index]["nik_kk"];
-                              // var rw = rtList[index]["rw"];
                               var nama = data[index]['nama'];
                               var nik = data[index]['nik'];
                               var hubungan = data[index]['hubungan'];
@@ -308,7 +453,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                       BoxShadow(
                                           blurRadius: 3, color: Colors.grey)
                                     ],
-                                    borderRadius: BorderRadius.circular(6),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Stack(
                                     children: [

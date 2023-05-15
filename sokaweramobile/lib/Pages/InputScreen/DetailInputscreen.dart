@@ -107,6 +107,16 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
     return menuItems7;
   }
 
+  String selectedValue8 = "Ya";
+
+  List<DropdownMenuItem<String>> get dropdownItems8 {
+    List<DropdownMenuItem<String>> menuItems8 = [
+      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
+      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
+    ];
+    return menuItems8;
+  }
+
   int nik_kk_local = 0;
   int id_petugas = 0;
   int rt = 0;
@@ -149,7 +159,7 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
       'status_kehamilan': selectedValue5,
       'partisipasi': selectedValue6,
       'ijazah_tertinggi': ijazahTertinggiController.text,
-      'bekerja': bekerjaController.text,
+      'bekerja': selectedValue8,
       'lapangan_kerja': lapanganKerjaController.text,
       'status_kerja': statusKerjaController.text,
       'id_petugas': id_petugas,
@@ -520,28 +530,32 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 20,
+            ),
             Container(
               alignment: Alignment.center,
-              padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
-              child: TextFormField(
-                controller: bekerjaController,
-                enabled: true,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.work),
-                  labelText:
-                      'Bekerja / membantu bekerja selama seminggu yang lalu',
-                  labelStyle: const TextStyle(
+              child: Text(
+                textAlign: TextAlign.center,
+                "Bekerja ? ",
+                style: GoogleFonts.poppins(
                     color: Colors.grey,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400),
+              ),
+            ),
+            Container(
+              width: size.width,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(top: 24),
+              child: DropdownButton(
+                value: selectedValue8,
+                items: dropdownItems8,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedValue8 = newValue!;
+                  });
+                },
               ),
             ),
             Container(

@@ -396,7 +396,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Container(
                           // padding: EdgeInsets.only(left: 5),
                           child: Text(
-                            "Warga yang sedang sekolah",
+                            "Warga sedang sekolah",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               fontSize: 14,
@@ -495,7 +495,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           // padding: EdgeInsets.only(left: 5),
                           alignment: Alignment.center,
                           child: Text(
-                            "Warga yang sedang hamil",
+                            "Warga sedang hamil",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               fontSize: 14,
@@ -543,7 +543,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   var rw = data_responden[index]['rw'];
                   var petugas = data_responden[index]['petugas'];
                   return Container(
-                    height: size.height * 0.15,
+                    height: size.height * 0.1,
                     width: size.width,
                     margin: EdgeInsets.only(
                       left: 20,
@@ -569,8 +569,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               width: size.width * 0.13,
                               margin: EdgeInsets.only(
                                 left: 20,
-                                top: 20,
-                                bottom: 50,
+                                top: 15,
+                                bottom: 10,
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.grey.withOpacity(0.2),
@@ -588,7 +588,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               children: [
                                 Padding(
                                   padding:
-                                      const EdgeInsets.only(top: 25, left: 15),
+                                      const EdgeInsets.only(top: 15, left: 15),
                                   child: Container(
                                     width: size.width * 0.4,
                                     child: Text(
@@ -620,31 +620,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ],
                             ),
                           ],
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          child: Container(
-                            margin: EdgeInsets.only(bottom: 10, left: 20),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.add_moderator_rounded,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  "Diinputkan oleh ${petugas}",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                         ),
                       ],
                     ),

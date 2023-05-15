@@ -196,7 +196,7 @@ class _InputScreenState extends State<InputScreen> {
     if (body["status"] == 200) {
       print("sukses insert kuisioner");
     } else {
-      print("error insert kuisioner");
+      print(body);
     }
   }
 
