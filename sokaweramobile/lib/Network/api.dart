@@ -11,30 +11,30 @@ class Network {
   }
 
   auth(data, apiURL) async {
-    var fullURL = "https://babygru.tech/api/auth/" + apiURL;
+    var fullURL = "https://api.itsmegru.com/api/auth/" + apiURL;
     return await http.post(Uri.parse(fullURL),
         body: jsonEncode(data), headers: _setHeaders());
   }
 
   store(data, apiURL) async {
-    var fullURL = "https://babygru.tech/api/" + apiURL;
+    var fullURL = "https://api.itsmegru.com/api/" + apiURL;
     return await http.post(Uri.parse(fullURL),
         body: jsonEncode(data), headers: _setHeaders());
   }
 
   getData(apiURL) async {
-    var fullUrl = "https://babygru.tech/api/" + apiURL;
+    var fullUrl = "https://api.itsmegru.com/api/" + apiURL;
     return await http.get(Uri.parse(fullUrl), headers: _setHeaders());
   }
 
   getDataId(id, apiURL) async {
-    var fullUrl = "https://babygru.tech/api/" + apiURL + "/${id}";
+    var fullUrl = "https://api.itsmegru.com/api/" + apiURL + "/${id}";
     // await _getToken();
     return await http.get(Uri.parse(fullUrl), headers: _setHeaders());
   }
 
   deleteDataNik(nik) async {
-    var fullURL = "https://babygru.tech/api/delete/" + nik;
+    var fullURL = "https://api.itsmegru.com/api/delete/" + nik;
     return await http.delete(Uri.parse(fullURL), headers: _setHeaders());
   }
 

@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       localStorage.setInt('id_petugas', body['id']);
       Get.to(BottomNavBar());
     } else {
-      var snackBar = SnackBar(content: Text('Email / Password Salah'));
+      var snackBar = SnackBar(content: Text('Username / Password Salah'));
       // Step 3
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }

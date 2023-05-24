@@ -43,7 +43,7 @@ class _ListScreenState extends State<ListScreen> {
 
   getJsonRespondenData() async {
     var response = await http.get(
-        Uri.parse("http://babygru.tech/api/keterangan_responden"),
+        Uri.parse("http://api.itsmegru.com/api/keterangan_responden"),
         headers: {
           "Accept": "application/json",
         });
@@ -66,7 +66,7 @@ class _ListScreenState extends State<ListScreen> {
   // getJsonData() async {
   //   var keterangan_tempat = "keterangan_tempat";
   //   var response = await http
-  //       .get(Uri.parse("http://babygru.tech/api/keterangan_tempat"), headers: {
+  //       .get(Uri.parse("http://api.itsmegru.com/api/keterangan_tempat"), headers: {
   //     "Accept": "application/json",
   //     // "Authorization": "Bearer $tokenLuar",
   //   });

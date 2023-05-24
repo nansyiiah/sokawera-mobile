@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
+import 'package:sokaweramobile/Pages/DetailPages/DetailPerumahanData.dart';
 import 'package:sokaweramobile/Pages/DetailPages/DetailUserUsahaData.dart';
 
 class DetailAllData extends StatefulWidget {
@@ -23,6 +24,8 @@ class _DetailAllDataState extends State<DetailAllData> {
   List dataUsaha = [];
   List dataTernak = [];
   List dataKorban = [];
+  List dataPerumahan = [];
+  List dataPembangunan = [];
   var jml_keluarga_sesuai_kk,
       jumlah_anggota_keluarga_menyusui,
       jumlah_anggota_keluarga_tinggal_dirumah,
@@ -54,6 +57,7 @@ class _DetailAllDataState extends State<DetailAllData> {
     await _loadAset(nik_local);
     await _loadTernak(nik_local);
     await _loadEval(nik_local);
+    await _loadKeteranganPerumahan(nik_local);
     var data = [];
     return data;
   }
@@ -176,6 +180,39 @@ class _DetailAllDataState extends State<DetailAllData> {
       };
       dataKorban.add(warga);
     }
+    return data;
+  }
+
+  _loadKeteranganPerumahan(nik) async {
+    var res = await Network().getData('keterangan_perumahan/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    var data = [];
+    for (var element in jsonData['data']) {
+      var warga = {
+        "status_penggunaan_bangunan_tempat_tinggal":
+            element["status_penggunaan_bangunan_tempat_tinggal"],
+        "status_lahan_bangunan_tempat_tinggal":
+            element["status_lahan_bangunan_tempat_tinggal"],
+        "jumlah_kk_tinggal_dibangunan": element["jumlah_kk_tinggal_dibangunan"],
+        "luas_lantai": element["luas_lantai"],
+        "jenis_lantai_terluas": element["jenis_lantai_terluas"],
+        "jenis_dinding_terluas": element["jenis_dinding_terluas"],
+        "jumlah_ruangan_seluruhnya": element["jumlah_ruangan_seluruhnya"],
+        "sumber_air_minum": element["sumber_air_minum"],
+        "sumber_penerangan_utama": element["sumber_penerangan_utama"],
+        "daya_terpasang": element["daya_terpasang"],
+        "bahan_bakar_utama_memasak": element["bahan_bakar_utama_memasak"],
+        "penggunaan_fasilitas_tempat_bab":
+            element["penggunaan_fasilitas_tempat_bab"],
+        "jenis_kloset": element["jenis_kloset"],
+        "tempat_pembuangan_akhir_tinja":
+            element["tempat_pembuangan_akhir_tinja"],
+        "jumlah_fasilitas_cuci_tangan": element["jumlah_fasilitas_cuci_tangan"],
+        "nomor_kk": element["nomor_kk"],
+      };
+      dataPerumahan.add(warga);
+    }
+
     return data;
   }
 
@@ -686,28 +723,33 @@ class _DetailAllDataState extends State<DetailAllData> {
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    height: size.height * 0.05,
-                    width: size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text("Keterangan Perumahan"),
-                        ),
-                        Spacer(),
-                        Container(
-                          padding: EdgeInsets.only(right: 20),
-                          child: Icon(Icons.keyboard_arrow_right_sharp),
-                        ),
-                      ],
+                  InkWell(
+                    onTap: () {
+                      Get.to(DetailPerumahanData(jsonData: dataPerumahan));
+                    },
+                    child: Container(
+                      height: size.height * 0.05,
+                      width: size.width,
+                      margin: EdgeInsets.symmetric(horizontal: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text("Keterangan Perumahan"),
+                          ),
+                          Spacer(),
+                          Container(
+                            padding: EdgeInsets.only(right: 20),
+                            child: Icon(Icons.keyboard_arrow_right_sharp),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Container(
@@ -996,44 +1038,6 @@ class _DetailAllDataState extends State<DetailAllData> {
                         );
                       },
                       itemCount: dataTernak.length,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: 24, top: 24, bottom: 10),
-                    child: Text(
-                      "Detail Kuisioner",
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: size.height * 0.05,
-                    width: size.width,
-                    margin: EdgeInsets.symmetric(horizontal: 24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text("Kuisioner Pembangunan"),
-                        ),
-                        Spacer(),
-                        Container(
-                          padding: EdgeInsets.only(right: 20),
-                          child: Icon(Icons.keyboard_arrow_right_sharp),
-                        ),
-                      ],
                     ),
                   ),
                   Container(

@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/DashboardScreen/DashboardScreen.dart';
 import 'package:sokaweramobile/Pages/DetailPages/DetailAllData.dart';
+import 'package:sokaweramobile/Pages/DetailPages/DetailKeteranganHubungan.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -31,6 +32,8 @@ class _DetailScreenState extends State<DetailScreen> {
   var nik_kk = "";
   var nama_laki = [];
   var nama_perempuan = [];
+  var jsonKetSosial = [];
+  var jsonPendidikan = [];
   var dusun, no_urut_rumah, rt, rw, nama_jalan;
 
   _deleteData(nik) async {
@@ -45,7 +48,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   _fetchData(id) async {
     var response = await http.get(
-        Uri.parse("http://babygru.tech/api/keterangan_responden/${id}"),
+        Uri.parse("http://api.itsmegru.com/api/keterangan_responden/${id}"),
         headers: {
           "Accept": "application/json",
         });
@@ -60,43 +63,101 @@ class _DetailScreenState extends State<DetailScreen> {
         'hubungan': u['hubungan'],
       };
       if (u['jenis_kelamin'] == 'Laki Laki' ||
-          u['jenis_kelamin'] == 'Laki-Laki') {
+          u['jenis_kelamin'] == 'Laki-Laki' ||
+          u['jenis_kelamin'] == 'Laki-laki') {
         nama_laki.add(u['nama']);
       }
-      if (u['jenis_kelamin'] == 'Perempuan') {
+      if (u['jenis_kelamin'] == 'Perempuan' ||
+          u['jenis_kelamin'] == 'perempuan') {
         nama_perempuan.add(u['nama']);
       }
 
       data.add(anak);
     }
     // _loadData(widget.item);
+    _loadData(widget.nik);
     return data;
   }
 
   void initState() {
 // TODO: implement initState
 
-    _loadData(widget.item);
+    _loadKeteranganSosial(widget.nik);
+    _loadKeteranganKhususPendidikan(widget.nik);
     myFuture = _fetchData(widget.item);
     super.initState();
   }
 
-  _loadData(id) async {
-    var res = await Network().getData('keterangan_tempat/${id}');
+  _loadData(nik_kk) async {
+    var res = await Network().getData('keterangan_tempat/nik/${nik_kk}');
     var jsonData = jsonDecode(res.body);
+    // print(jsonData[0]);
+
     setState(() {
-      nama_jalan = jsonData["keterangan_tempat"]["nama_jalan"];
-      rt = jsonData["keterangan_tempat"]["rt"];
-      rw = jsonData["keterangan_tempat"]["rw"];
-      dusun = jsonData["keterangan_tempat"]["dusun"];
-      no_urut_rumah = jsonData["keterangan_tempat"]['nomor_urut_rumah'];
+      nama_jalan = jsonData["keterangan_tempat"][0]["nama_jalan"];
+      rt = jsonData["keterangan_tempat"][0]["rt"];
+      rw = jsonData["keterangan_tempat"][0]["rw"];
+      dusun = jsonData["keterangan_tempat"][0]["dusun"];
+      no_urut_rumah = jsonData["keterangan_tempat"][0]['nomor_urut_rumah'];
     });
+  }
+
+  _loadKeteranganSosial(nik_kk) async {
+    var res = await Network().getData('keterangan_sosial/nik_kk/${nik_kk}');
+    var jsonData = jsonDecode(res.body);
+    for (var element in jsonData['data']) {
+      var warga = {
+        "nik_kk": element["nik_kk"],
+        "rt": element["rt"],
+        "rw": element["rw"],
+        "nama": element["nama"],
+        "nik": element["nik"],
+        "hubungan": element["hubungan"],
+        "tinggal": element["tinggal"],
+        "jenis_kelamin": element["jenis_kelamin"],
+        "umur": element["umur"],
+        "status": element["status"],
+        "status_kehamilan": element["status_kehamilan"],
+        "partisipasi": element["partisipasi"],
+        "ijazah_tertinggi": element["ijazah_tertinggi"],
+        "bekerja": element["bekerja"],
+        "lapangan_kerja": element["lapangan_kerja"],
+        "status_kerja": element["status_kerja"],
+      };
+      jsonKetSosial.add(warga);
+    }
+  }
+
+  _loadKeteranganKhususPendidikan(nik) async {
+    var res =
+        await Network().getData('keterangan_khusus_pendidikan/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    var data = [];
+    for (var element in jsonData['data']) {
+      var warga = {
+        "id": element["id"],
+        "nama_anggota_keluarga_masih_sekolah":
+            element["nama_anggota_keluarga_masih_sekolah"],
+        "jenjang_pendidikan_ditempuh": element["jenjang_pendidikan_ditempuh"],
+        "nama_sekolah": element["nama_sekolah"],
+        "kelas": element["kelas"],
+        "kost_tidak": element["kost_tidak"],
+        "beasiswa_tidak": element["beasiswa_tidak"],
+        "melanjutkan_sekolah_tidak": element["melanjutkan_sekolah_tidak"],
+        "nama_sekolah_tujuan": element["nama_sekolah_tujuan"],
+        "jumlah_biaya_sekolah": element["jumlah_biaya_sekolah"],
+        "nik_kk": element["nik_kk"],
+      };
+      jsonPendidikan.add(warga);
+    }
+    return data;
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     // _loadData(widget.item);
+    // print(widget.item);
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.93),
       body: SingleChildScrollView(
@@ -238,7 +299,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                     ),
                                     SizedBox(
                                       height: 23,
-                                      width: 70,
+                                      width: 85,
                                       child: ElevatedButton(
                                         onPressed: () {},
                                         child: Text(
@@ -420,24 +481,24 @@ class _DetailScreenState extends State<DetailScreen> {
                   SizedBox(
                     height: size.height * 0.5,
                     width: size.width,
-                    child: data.isNotEmpty
+                    child: jsonKetSosial.isNotEmpty
                         ? ListView.builder(
                             padding: EdgeInsets.only(top: 10),
                             shrinkWrap: true,
-                            itemCount: data.length,
+                            itemCount: jsonKetSosial.length,
                             itemBuilder: (context, index) {
                               var nama = data[index]['nama'];
                               var nik = data[index]['nik'];
                               var hubungan = data[index]['hubungan'];
                               return InkWell(
                                 onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         DetailScreen(item: rtList[index]["id"]),
-                                  //   ),
-                                  // );
+                                  print(jsonPendidikan);
+                                  Get.to(
+                                    DetailKeteranganHubungan(
+                                      jsonData: [jsonKetSosial[index]],
+                                      jsonPendidikan: jsonPendidikan,
+                                    ),
+                                  );
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(
