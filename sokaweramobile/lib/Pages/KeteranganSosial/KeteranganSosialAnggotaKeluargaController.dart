@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:core';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sokaweramobile/Pages/InputScreen/DetailInputscreen.dart';
+import 'package:sokaweramobile/Pages/KeteranganSosial/DetailKeteranganSosial.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class KeteranganSosial extends StatefulWidget {
@@ -140,7 +140,7 @@ class _KeteranganSosialState extends State<KeteranganSosial> {
 
                   return InkWell(
                     onTap: () {
-                      Get.to(DetailInputscreen(item: index_increment));
+                      Get.to(DetailKeteranganSosial(item: index_increment));
                     },
                     child: Container(
                       height: size.height * 0.06,

@@ -6,55 +6,81 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sokaweramobile/Pages/InputScreen/DetailHewanTernak.dart';
+import 'package:sokaweramobile/Network/api.dart';
+import 'package:sokaweramobile/Pages/KeteranganKhususPendidikan/DetailKeteranganPendidikan.dart';
 
-class PenguasaanHewanTernakController extends StatefulWidget {
-  const PenguasaanHewanTernakController({super.key});
+class KeteranganKhususPendidikanController extends StatefulWidget {
+  const KeteranganKhususPendidikanController({super.key});
 
   @override
-  State<PenguasaanHewanTernakController> createState() =>
-      _PenguasaanHewanTernakControllerState();
+  State<KeteranganKhususPendidikanController> createState() =>
+      _KeteranganKhususPendidikanControllerState();
 }
 
-class _PenguasaanHewanTernakControllerState
-    extends State<PenguasaanHewanTernakController> {
-  List nama_hewan = ["Sapi", "Kerbau", "Kambing atau Domba"];
+class _KeteranganKhususPendidikanControllerState
+    extends State<KeteranganKhususPendidikanController> {
+  var nomor_kk;
+  List nama_sekolah = [];
+  _loadDataKeluarga() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getInt('nomor_kk');
+    if (user != null) {
+      setState(() {
+        nomor_kk = user;
+      });
+    }
+  }
+
+  _loadDataSekolahFromServer() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var keterangan_sosial = localStorage.getStringList('nama_anggota') ?? [];
+    if (keterangan_sosial != null) {
+      for (var element in keterangan_sosial) {
+        var parsing = jsonDecode(element);
+        if (parsing['partisipasi'] == 'Masih Sekolah') {
+          nama_sekolah.add(parsing['nama']);
+        }
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _loadDataKeluarga();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _loadDataSekolahFromServer();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
         centerTitle: true,
-        title: Text("Penguasaan Hewan Ternak"),
+        title: Text("Keterangan Khusus Pendidikan"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // showDeleteDialog(context);
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               height: size.height * 0.75,
-              child: nama_hewan.isEmpty
+              child: nama_sekolah.isEmpty
                   ? Center(
                       child: Text("No Data"),
                     )
                   : ListView.builder(
-                      itemCount: nama_hewan.length,
+                      itemCount: nama_sekolah.length,
                       itemBuilder: (context, index) {
                         var index_increment = index + 1;
                         return InkWell(
                           onTap: () {
-                            Get.to(DetailHewanTernak(nama: nama_hewan[index]));
+                            Get.to(DetailKeteranganPendidikan(
+                              nama: nama_sekolah[index],
+                            ));
+                            // Get.to(DetailInputscreen(item: index_increment));
                           },
                           child: Container(
                             height: size.height * 0.06,
@@ -92,9 +118,9 @@ class _PenguasaanHewanTernakControllerState
                                     ),
                                     Spacer(),
                                     Text(
-                                      nama_hewan.isEmpty
+                                      nama_sekolah.isEmpty
                                           ? "Belum diisi"
-                                          : nama_hewan[index],
+                                          : nama_sekolah[index],
                                       style: GoogleFonts.poppins(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400),

@@ -7,15 +7,15 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
-class DetailInputscreen extends StatefulWidget {
+class DetailKeteranganSosial extends StatefulWidget {
   final int item;
-  const DetailInputscreen({super.key, required this.item});
+  const DetailKeteranganSosial({super.key, required this.item});
 
   @override
-  State<DetailInputscreen> createState() => _DetailInputscreenState();
+  State<DetailKeteranganSosial> createState() => _DetailKeteranganSosialState();
 }
 
-class _DetailInputscreenState extends State<DetailInputscreen> {
+class _DetailKeteranganSosialState extends State<DetailKeteranganSosial> {
   String selectedValue = "Kepala Keluarga";
   String selectedValue2 = "Ya";
   String selectedValue3 = "Laki Laki";
@@ -216,7 +216,6 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
   _getList() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = localStorage.getStringList("nama_anggota");
-    print(user);
   }
 
   int umur = 0;
@@ -239,17 +238,6 @@ class _DetailInputscreenState extends State<DetailInputscreen> {
         centerTitle: true,
         title: Text("${widget.item}"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // showDeleteDialog(context);
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:sokaweramobile/Models/data_keterangan_tempat.dart';
 import 'package:sokaweramobile/Models/data_keterangan_responden.dart';
-import 'package:sokaweramobile/Pages/DetailScreen.dart';
+import 'package:sokaweramobile/Pages/DetailPages/DetailScreen.dart';
 
 class ListScreen extends StatefulWidget {
   const ListScreen({super.key});

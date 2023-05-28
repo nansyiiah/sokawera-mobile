@@ -322,17 +322,6 @@ class _DetailKuisionerPembangunanState
         centerTitle: true,
         title: Text("Kuisioner"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // showDeleteDialog(context);
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(

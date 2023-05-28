@@ -1,44 +1,50 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/simple/list_notifier.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sokaweramobile/Network/api.dart';
-import 'package:sokaweramobile/Pages/InputScreen/DetailKeteranganPendidikan.dart';
+import 'package:sokaweramobile/Pages/KeteranganUsaha/DetailKeteranganUsaha.dart';
 
-class KeteranganKhususPendidikanController extends StatefulWidget {
-  const KeteranganKhususPendidikanController({super.key});
+class KeteranganUsahaController extends StatefulWidget {
+  const KeteranganUsahaController({super.key});
 
   @override
-  State<KeteranganKhususPendidikanController> createState() =>
-      _KeteranganKhususPendidikanControllerState();
+  State<KeteranganUsahaController> createState() =>
+      _KeteranganUsahaControllerState();
 }
 
-class _KeteranganKhususPendidikanControllerState
-    extends State<KeteranganKhususPendidikanController> {
-  var nomor_kk;
-  List nama_sekolah = [];
-  _loadDataKeluarga() async {
+class _KeteranganUsahaControllerState extends State<KeteranganUsahaController> {
+  var total_data;
+  List list_nama = [];
+  _loadKeteranganTotalData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getInt('nomor_kk');
+    var user = localStorage.getInt('total_keluarga_full');
     if (user != null) {
       setState(() {
-        nomor_kk = user;
+        total_data = user;
       });
+    } else {
+      return null;
     }
   }
 
-  _loadDataSekolahFromServer() async {
+  _loadAllDatafromLocal() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var keterangan_sosial = localStorage.getStringList('nama_anggota') ?? [];
-    if (keterangan_sosial != null) {
-      for (var element in keterangan_sosial) {
+    var user = localStorage.getStringList("nama_anggota");
+    if (user != null) {
+      for (var element in user) {
         var parsing = jsonDecode(element);
-        if (parsing['partisipasi'] == 'Masih Sekolah') {
-          nama_sekolah.add(parsing['nama']);
+        if (parsing["usaha"] == "Ya") {
+          var data = {
+            'nama': parsing['nama'],
+            'nik': parsing['nik'],
+            'nomor_kk': parsing['nik_kk']
+          };
+          list_nama.add(data);
         }
       }
     }
@@ -47,51 +53,43 @@ class _KeteranganKhususPendidikanControllerState
   @override
   void initState() {
     // TODO: implement initState
-    _loadDataKeluarga();
+    _loadKeteranganTotalData();
+    _loadAllDatafromLocal();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _loadDataSekolahFromServer();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
         centerTitle: true,
-        title: Text("Keterangan Khusus Pendidikan"),
+        title: Text("Keterangan Khusus Usaha"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // showDeleteDialog(context);
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               height: size.height * 0.75,
-              child: nama_sekolah.isEmpty
+              child: list_nama.isEmpty
                   ? Center(
                       child: Text("No Data"),
                     )
                   : ListView.builder(
-                      itemCount: nama_sekolah.length,
+                      itemCount: list_nama.length,
                       itemBuilder: (context, index) {
                         var index_increment = index + 1;
                         return InkWell(
                           onTap: () {
-                            Get.to(DetailKeteranganPendidikan(
-                              nama: nama_sekolah[index],
-                            ));
-                            // Get.to(DetailInputscreen(item: index_increment));
+                            Get.to(
+                              DetailKeteranganUsaha(
+                                nama: list_nama[index]['nama'],
+                                nik: list_nama[index]['nik'],
+                                nomor_kk: list_nama[index]['nomor_kk'],
+                              ),
+                            );
                           },
                           child: Container(
                             height: size.height * 0.06,
@@ -129,9 +127,9 @@ class _KeteranganKhususPendidikanControllerState
                                     ),
                                     Spacer(),
                                     Text(
-                                      nama_sekolah.isEmpty
+                                      list_nama.isEmpty
                                           ? "Belum diisi"
-                                          : nama_sekolah[index],
+                                          : list_nama[index]['nama'],
                                       style: GoogleFonts.poppins(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400),

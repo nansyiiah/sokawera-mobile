@@ -139,17 +139,6 @@ class _DetailHewanTernakState extends State<DetailHewanTernak> {
         centerTitle: true,
         title: Text("Ternak ${widget.nama}"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // showDeleteDialog(context);
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(

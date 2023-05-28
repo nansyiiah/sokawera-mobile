@@ -8,39 +8,83 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
-class PenguasaanTanahController extends StatefulWidget {
-  const PenguasaanTanahController({super.key});
+class DetailKeteranganPendidikan extends StatefulWidget {
+  final String nama;
+  const DetailKeteranganPendidikan({super.key, required this.nama});
 
   @override
-  State<PenguasaanTanahController> createState() =>
-      _PenguasaanTanahControllerState();
+  State<DetailKeteranganPendidikan> createState() =>
+      _DetailKeteranganPendidikanState();
 }
 
-class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
-  var lahanDimiliki, lahanDariPihakLain, lahanBeradaPihakLain;
-  var total_lahan, nik_kk;
-  List datas = [];
+class _DetailKeteranganPendidikanState
+    extends State<DetailKeteranganPendidikan> {
+  var nama;
+  var nik;
+  List<String> nama_anggota = [];
 
-  _getTotalData() async {
-    if (total_lahan == null) {
-      total_lahan = 0;
-    }
-    setState(() {
-      total_lahan = int.parse(lahanDimilikiController.text) +
-          int.parse(lahanPihakLainController.text) -
-          int.parse(lahanBeradaPihakLainController.text);
-    });
-  }
-
-  _getNomorKKLocal() async {
+  _loadNikFromLocal() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = localStorage.getString('keterangan_tempat');
     var parsing = jsonDecode(user!);
     if (user != null) {
       setState(() {
-        nik_kk = parsing['nomor_kk'];
+        nik = parsing['nomor_kk'];
       });
     }
+  }
+
+  TextEditingController jenjangController = TextEditingController();
+  TextEditingController namaSekolahController = TextEditingController();
+  TextEditingController kelasController = TextEditingController();
+  TextEditingController namaSekolahTujuanController = TextEditingController();
+  TextEditingController jumlahBiayaSekolahController = TextEditingController();
+  String selectedValue2 = "Tidak";
+  String selectedValue3 = "Tidak";
+  String selectedValue4 = "Ya";
+  bool isLanjut = true;
+
+  List<DropdownMenuItem<String>> get dropdownItems2 {
+    List<DropdownMenuItem<String>> menuItems2 = [
+      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
+      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
+    ];
+    return menuItems2;
+  }
+
+  List<DropdownMenuItem<String>> get dropdownItems3 {
+    List<DropdownMenuItem<String>> menuItems3 = [
+      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
+      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
+    ];
+    return menuItems3;
+  }
+
+  List<DropdownMenuItem<String>> get dropdownItems4 {
+    List<DropdownMenuItem<String>> menuItems4 = [
+      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
+      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
+    ];
+    return menuItems4;
+  }
+
+  _getStatus() async {
+    if (selectedValue4 == "Tidak") {
+      setState(() {
+        isLanjut = false;
+      });
+    } else {
+      setState(() {
+        isLanjut = true;
+      });
+    }
+  }
+
+  _deleteLocalKeteranganPendidikan() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.remove('detail_keterangan_pendidikan');
+    Navigator.of(context, rootNavigator: true).pop();
+    Get.to(BottomNavBar());
   }
 
   showAlertDialog(BuildContext context) {
@@ -74,97 +118,99 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
     );
   }
 
-  @override
-  TextEditingController nomorUrutBidangController = TextEditingController();
-  TextEditingController lokasiLahanController = TextEditingController();
-  TextEditingController nomorBlokTanahController = TextEditingController();
-  TextEditingController lahanDimilikiController = TextEditingController();
-  TextEditingController lahanPihakLainController = TextEditingController();
-  TextEditingController lahanBeradaPihakLainController =
-      TextEditingController();
+  showDeleteDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop(false);
+      },
+    );
 
-  String selectedValue1 = "Lahan tempat tinggal";
+    Widget okButton = TextButton(
+      onPressed: () {
+        _deleteLocalKeteranganPendidikan();
+      },
+      child: Text("OK"),
+    );
 
-  List<DropdownMenuItem<String>> get dropdownItems1 {
-    List<DropdownMenuItem<String>> menuItems1 = [
-      DropdownMenuItem(
-          child: Text("Lahan tempat tinggal"), value: "Lahan tempat tinggal"),
-      DropdownMenuItem(child: Text("Lahan sawah"), value: "Lahan sawah"),
-      DropdownMenuItem(
-          child: Text("Lahan pertanian bukan sawah"),
-          value: "Lahan pertanian bukan sawah"),
-    ];
-    return menuItems1;
-  }
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Message"),
+      content: Text(
+        "Are you sure want to delete ?",
+        style: GoogleFonts.poppins(),
+      ),
+      actions: [
+        cancelButton,
+        okButton,
+      ],
+    );
 
-  String selectedValue2 = "Ya";
-
-  List<DropdownMenuItem<String>> get dropdownItems2 {
-    List<DropdownMenuItem<String>> menuItems2 = [
-      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
-      DropdownMenuItem(child: Text("Belum"), value: "Belum"),
-      DropdownMenuItem(child: Text("Tidak tahu"), value: "Tidak tahu"),
-    ];
-    return menuItems2;
-  }
-
-  String selectedValue3 = "Ya";
-
-  List<DropdownMenuItem<String>> get dropdownItems3 {
-    List<DropdownMenuItem<String>> menuItems3 = [
-      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
-      DropdownMenuItem(child: Text("Belum"), value: "Belum"),
-      DropdownMenuItem(child: Text("Tidak tahu"), value: "Tidak tahu"),
-    ];
-    return menuItems3;
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
   void initState() {
     // TODO: implement initState
-    _getNomorKKLocal();
+    _loadNikFromLocal();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    _getTotalData();
-    TextEditingController lahanDikuasaiController =
-        TextEditingController(text: total_lahan.toString());
+    setState(() {
+      nama = widget.nama;
+    });
+    TextEditingController namaController = TextEditingController(text: nama);
 
+    Size size = MediaQuery.of(context).size;
+    _getStatus();
     _savedDataToLocal() async {
       List data_sebelum_append = [];
       var data = {
-        'jenis_lahan': selectedValue1,
-        'nomor_urut_bidang': nomorUrutBidangController.text,
-        'lokasi_lahan': lokasiLahanController.text,
-        'nomor_blok_tanah': nomorBlokTanahController.text,
-        'tanah_bersertifikat': selectedValue2,
-        'nama_sppt_sesuai': selectedValue3,
-        'lahan_dimiliki': lahanDimilikiController.text,
-        'lahan_pihak_lain': lahanPihakLainController.text,
-        'lahan_berada_pihak_lain': lahanBeradaPihakLainController.text,
-        'lahan_dikuasai': lahanDikuasaiController.text,
-        'nomor_kk': "${nik_kk}",
+        'nama': "${namaController.text}",
+        'jenjang_pendidikan_ditempuh': "${jenjangController.text}",
+        'nama_sekolah': "${namaSekolahController.text}",
+        'kelas': "${kelasController.text}",
+        'kost_tidak': selectedValue2,
+        'beasiswa_tidak': selectedValue3,
+        'melanjutkan_sekolah_tidak': selectedValue4,
+        'nama_sekolah_tujuan': "${namaSekolahTujuanController.text}",
+        'jumlah_biaya_sekolah': "${jumlahBiayaSekolahController.text}",
+        'nik_kk': nik,
       };
       data_sebelum_append.add(data);
       final userEncode = jsonEncode(data);
+      nama_anggota.add(userEncode);
       SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.setString('penguasaan_tanah', userEncode);
-      showAlertDialog(context);
+      localStorage.setString('keterangan_khusus_pendidikan', userEncode);
+      if (localStorage.getString('keterangan_khusus_pendidikan') != null) {
+        var currentList =
+            localStorage.getStringList('detail_keterangan_pendidikan') ?? [];
+        currentList.add(userEncode);
+        await localStorage.setStringList(
+            'detail_keterangan_pendidikan', currentList);
+        showAlertDialog(context);
+      }
     }
 
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
         centerTitle: true,
-        title: Text("Penguasaan Tanah"),
+        title: Text("Keterangan ${widget.nama}"),
         backgroundColor: Color(0xFF68b7d8),
         actions: [
           InkWell(
             onTap: () {
-              // showDeleteDialog(context);
+              showDeleteDialog(context);
             },
             child: Container(
               child: Icon(Icons.delete),
@@ -181,38 +227,13 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
             ),
             Container(
               alignment: Alignment.center,
-              child: Text(
-                textAlign: TextAlign.center,
-                "Jenis Lahan yang dimiliki ? ",
-                style: GoogleFonts.poppins(
-                    color: Colors.grey,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400),
-              ),
-            ),
-            Container(
-              width: size.width,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(top: 24),
-              child: DropdownButton(
-                value: selectedValue1,
-                items: dropdownItems1,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedValue1 = newValue!;
-                  });
-                },
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: nomorUrutBidangController,
-                enabled: true,
+                controller: namaController,
+                enabled: false,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: 'Nomor urut bidang',
+                  labelText: 'Nama Anggota Keluarga',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),
@@ -231,11 +252,11 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: lokasiLahanController,
+                controller: jenjangController,
                 enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: 'Lokasi Lahan',
+                  labelText: 'Jenjang Pendidikan yang sedang ditempuh',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),
@@ -254,11 +275,34 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: nomorBlokTanahController,
+                controller: namaSekolahController,
                 enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: 'Nomor Blok Tanah',
+                  labelText: 'Nama Sekolah',
+                  labelStyle: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
+              child: TextFormField(
+                controller: kelasController,
+                enabled: true,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.person),
+                  labelText: 'Kelas',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),
@@ -280,7 +324,7 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
               alignment: Alignment.center,
               child: Text(
                 textAlign: TextAlign.center,
-                "Apakah Tanah Bersertifikat ? ",
+                "Apakah Ngekost ? ",
                 style: GoogleFonts.poppins(
                     color: Colors.grey,
                     fontSize: 14,
@@ -308,7 +352,7 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
               alignment: Alignment.center,
               child: Text(
                 textAlign: TextAlign.center,
-                "Apakah nama di SPPT Tanah sudah sesuai nama pemilik ? ",
+                "Apakah Pernah Mendapatkan Beasiswa ? (dalam setahun)",
                 style: GoogleFonts.poppins(
                     color: Colors.grey,
                     fontSize: 14,
@@ -329,105 +373,69 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
                 },
               ),
             ),
+            SizedBox(
+              height: 20,
+            ),
             Container(
               alignment: Alignment.center,
               child: Text(
                 textAlign: TextAlign.center,
-                "Luas lahan (meter persegi)",
+                "Apakah akan melanjutkan sekolah ?",
                 style: GoogleFonts.poppins(
                     color: Colors.grey,
                     fontSize: 14,
                     fontWeight: FontWeight.w400),
               ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding:
-                        const EdgeInsets.only(left: 24, right: 24, top: 24),
-                    child: TextFormField(
-                      controller: lahanDimilikiController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Dimiliki',
-                        labelStyle: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.grey,
-                          ),
-                        ),
+            Container(
+              width: size.width,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.only(top: 24),
+              child: DropdownButton(
+                value: selectedValue4,
+                items: dropdownItems4,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedValue4 = newValue!;
+                  });
+                },
+              ),
+            ),
+            Visibility(
+              visible: isLanjut ? true : false,
+              child: Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
+                child: TextFormField(
+                  controller: namaSekolahTujuanController,
+                  enabled: true,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.person),
+                    labelText: 'Nama Sekolah Tujuan',
+                    labelStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
                       ),
                     ),
-                  ), // <-- Wrapped in Expanded.
+                  ),
                 ),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding:
-                        const EdgeInsets.only(left: 24, right: 24, top: 24),
-                    child: TextFormField(
-                      controller: lahanPihakLainController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'berasal dari pihak lain',
-                        labelStyle: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ), // <-- Wrapped in Expanded.
-                ),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding:
-                        const EdgeInsets.only(left: 24, right: 24, top: 24),
-                    child: TextFormField(
-                      controller: lahanBeradaPihakLainController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'berada di pihak lain',
-                        labelStyle: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ), // <-- Wrapped in Expanded.
-                ),
-              ],
+              ),
             ),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
-                controller: lahanDikuasaiController,
-                enabled: false,
+                controller: jumlahBiayaSekolahController,
+                enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: 'Lahan dikuasai',
+                  labelText: 'Jumlah biaya pendidikan selama setahun',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),

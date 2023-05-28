@@ -1,74 +1,49 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sokaweramobile/Pages/InputScreen/DetailKeteranganKesehatan.dart';
-import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
+import 'package:sokaweramobile/Pages/KejadianKematian/DetailKejadianKematian.dart';
 
-class KeteranganKesehatanController extends StatefulWidget {
-  const KeteranganKesehatanController({super.key});
+class KejadianKematianController extends StatefulWidget {
+  const KejadianKematianController({super.key});
 
   @override
-  State<KeteranganKesehatanController> createState() =>
-      _KeteranganKesehatanControllerState();
+  State<KejadianKematianController> createState() =>
+      _KejadianKematianControllerState();
 }
 
-class _KeteranganKesehatanControllerState
-    extends State<KeteranganKesehatanController> {
-  var total_data;
-  var list_nama = [];
-  var list_nik = [];
-  bool _isFilled = false;
-
-  _loadKeteranganTotalData() async {
+class _KejadianKematianControllerState
+    extends State<KejadianKematianController> {
+  var nomor_kk;
+  List dataKelahiran = [];
+  _loadDataKeluarga() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getInt('total_keluarga_full');
+    var user = localStorage.getInt('nomor_kk');
     if (user != null) {
       setState(() {
-        total_data = user;
+        nomor_kk = user;
       });
-    } else {
-      return null;
     }
   }
 
-  _loadListKeteranganSosial() async {
+  _loadDataKelahiranFromLocal() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getStringList("nama_anggota") ?? [];
-    if (user != null) {
-      for (var element in user) {
+    var data_kelahiran =
+        localStorage.getStringList('detail_kejadian_kematian') ?? [];
+    if (data_kelahiran != null) {
+      for (var element in data_kelahiran) {
         var parsing = jsonDecode(element);
-        if (user.length <= total_data) {
-          list_nama.add(parsing["nama"]);
-          list_nik.add(parsing['nik']);
-        }
-      }
-      var kekurangan = total_data - user.length;
-      for (var i = 0; i < kekurangan; i++) {
-        list_nama.add("Belum diisi");
-      }
-      if (user.length == total_data) {
-        _isFilled = true;
+        dataKelahiran.add(parsing["nama"]);
       }
     }
-  }
-
-  _deleteLocalKeteranganKesehatanData() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    localStorage.remove("keterangan_khusus_kesehatan");
-    localStorage.remove("detail_keterangan_khusus_kesehatan");
-    Get.to(BottomNavBar());
   }
 
   @override
   void initState() {
     // TODO: implement initState
-    _loadKeteranganTotalData();
-    _loadListKeteranganSosial();
+    _loadDataKeluarga();
+    _loadDataKelahiranFromLocal();
     super.initState();
   }
 
@@ -79,37 +54,38 @@ class _KeteranganKesehatanControllerState
       appBar: AppBar(
         elevation: 2,
         centerTitle: true,
-        title: Text("Keterangan Kesehatan"),
+        title: Text("Kejadian Kematian"),
         backgroundColor: Color(0xFF68b7d8),
         actions: [
           InkWell(
             onTap: () {
-              _deleteLocalKeteranganKesehatanData();
+              // showDeleteDialog(context);
+              setState(() {
+                dataKelahiran.add("Belum Diisi");
+              });
             },
             child: Container(
-              child: Icon(Icons.delete),
+              child: Icon(Icons.add),
               padding: EdgeInsets.only(right: 15),
             ),
           )
         ],
       ),
+      backgroundColor: Colors.white.withOpacity(0.93),
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               height: size.height * 0.75,
               child: ListView.builder(
-                itemCount: total_data,
+                itemCount: dataKelahiran.length,
                 itemBuilder: (context, index) {
                   var index_increment = index + 1;
                   return InkWell(
                     onTap: () {
-                      Get.to(
-                        DetailKeteranganKesehatan(
-                          nama: list_nama[index],
-                          nik: list_nik[index],
-                        ),
-                      );
+                      Get.to(DetailKejadianKematian());
                     },
                     child: Container(
                       height: size.height * 0.06,
@@ -147,9 +123,9 @@ class _KeteranganKesehatanControllerState
                               ),
                               Spacer(),
                               Text(
-                                list_nama.isEmpty
+                                dataKelahiran[0][index] == null
                                     ? "Belum diisi"
-                                    : list_nama[index],
+                                    : dataKelahiran[index],
                                 style: GoogleFonts.poppins(
                                     fontSize: 14, fontWeight: FontWeight.w400),
                               ),

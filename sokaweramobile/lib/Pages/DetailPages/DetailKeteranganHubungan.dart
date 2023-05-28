@@ -32,6 +32,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
   String selectedValue3 = "";
   String selectedValue4 = "";
   String selectedValue5 = "";
+  String selectedStatus = "";
 
   List<DropdownMenuItem<String>> get dropdownItems2 {
     List<DropdownMenuItem<String>> menuItems2 = [
@@ -42,6 +43,16 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
           value: "Ya Bukan Anggota Keluarga"),
     ];
     return menuItems2;
+  }
+
+  List<DropdownMenuItem<String>> get dropdownItemsStatus {
+    List<DropdownMenuItem<String>> menuItemsStatus = [
+      DropdownMenuItem(child: Text("Belum Kawin"), value: "Belum Kawin"),
+      DropdownMenuItem(child: Text("Kawin / Nikah"), value: "Kawin / Nikah"),
+      DropdownMenuItem(child: Text("Cerai Hidup"), value: "Cerai Hidup"),
+      DropdownMenuItem(child: Text("Cerai Mati"), value: "Cerai Mati"),
+    ];
+    return menuItemsStatus;
   }
 
   List<DropdownMenuItem<String>> get dropdownItems4 {
@@ -70,6 +81,17 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
           child: Text("Tidak bersekolah lagi"), value: "Tidak bersekolah lagi"),
     ];
     return menuItems5;
+  }
+
+  String selectedValueKost = "";
+  String selectedValueBeasiswa = "";
+
+  List<DropdownMenuItem<String>> get dropdownItemsKost {
+    List<DropdownMenuItem<String>> menuItemsKost = [
+      DropdownMenuItem(child: Text("Ya"), value: "Ya"),
+      DropdownMenuItem(child: Text("Tidak"), value: "Tidak"),
+    ];
+    return menuItemsKost;
   }
 
   TextEditingController nik = TextEditingController();
@@ -153,8 +175,8 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
   _loadKetPendidikan(data) async {
     for (var element in data) {
       var warga = {
-        "nama_anggota_keluarga_masih_sekolah":
-            element["nama_anggota_keluarga_masih_sekolah"],
+        "id": element["id"],
+        "nama": element["nama"],
         "jenjang_pendidikan_ditempuh": element["jenjang_pendidikan_ditempuh"],
         "nama_sekolah": element["nama_sekolah"],
         "kelas": element["kelas"],
@@ -172,12 +194,12 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
 
   Me(data, nama) async {
     for (var element in data) {
-      if (element['nama_anggota_keluarga_masih_sekolah'] == nama) {
+      if (element['nama'] == nama) {
         setState(() {
           _isMe = true;
           var warga = {
-            "nama_anggota_keluarga_masih_sekolah":
-                element["nama_anggota_keluarga_masih_sekolah"],
+            "id": element["id"],
+            "nama": element["nama"],
             "jenjang_pendidikan_ditempuh":
                 element["jenjang_pendidikan_ditempuh"],
             "nama_sekolah": element["nama_sekolah"],
@@ -193,7 +215,8 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
         });
       } else {
         var warga = {
-          "nama_anggota_keluarga_masih_sekolah": "null",
+          "id": "null",
+          "nama": "null",
           "jenjang_pendidikan_ditempuh": "null",
           "nama_sekolah": "null",
           "kelas": "null",
@@ -221,7 +244,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
       "tinggal": selectedValue2,
       "jenis_kelamin": selectedValue3,
       "umur": umur.text,
-      "status": jsonData[0]['status'],
+      "status": selectedStatus,
       "status_kehamilan": selectedValue4,
       "partisipasi": selectedValue5,
       "ijazah_tertinggi": ijazah_tertinggi.text,
@@ -238,12 +261,35 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
     }
   }
 
+  _editKeteranganPendidikan(id) async {
+    var data = {
+      'nama': namaAnakSekolah.text,
+      'jenjang_pendidikan_ditempuh': jenjang_pendidikan_ditempuh.text,
+      'nama_sekolah': nama_sekolah.text,
+      'kelas': kelas.text,
+      'kost_tidak': selectedValueKost,
+      'beasiswa_tidak': selectedValueBeasiswa,
+      'melanjutkan_sekolah_tidak': melanjutkan_sekolah_tidak.text,
+      'jumlah_biaya_sekolah': jumlah_biaya_sekolah.text,
+    };
+    var res =
+        await Network().store(data, 'keterangan_khusus_pendidikan/edit/${id}');
+    var body = jsonDecode(res.body);
+    if (body['code'] == 200) {
+      showAlertDialog(context);
+    } else {
+      print(body);
+      showErrorDialog(context);
+    }
+  }
+
   _loadData(data) {
     nik.text = data['nik'];
     hubungan.text = data['hubungan'];
     umur.text = data['umur'];
     selectedValue2 = data['tinggal'];
     selectedValue3 = data['jenis_kelamin'];
+    selectedStatus = data['status'];
     selectedValue4 = data['status_kehamilan'];
     selectedValue5 = data['partisipasi'];
     ijazah_tertinggi.text = data['ijazah_tertinggi'];
@@ -253,6 +299,8 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
     return data;
   }
 
+  var idKosong;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -260,14 +308,16 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
       myFuture = _loadKetPendidikan(widget.jsonPendidikan);
       _loadData(widget.jsonData[0]);
       Me(schoolData, widget.jsonData[0]['nama']);
-      namaAnakSekolah.text =
-          tes[0]["nama_anggota_keluarga_masih_sekolah"] ?? ["null"];
+      idKosong = tes[0]["id"] ?? ["null"];
+      namaAnakSekolah.text = tes[0]["nama"] ?? ["null"];
       jenjang_pendidikan_ditempuh.text =
           tes[0]['jenjang_pendidikan_ditempuh'] ?? ["null"];
       nama_sekolah.text = tes[0]['nama_sekolah'] ?? ['null'];
       kelas.text = tes[0]['kelas'] ?? ['null'];
       kost_tidak.text = tes[0]['kost_tidak'] ?? ['null'];
+      selectedValueKost = tes[0]['kost_tidak'] ?? ['null'];
       beasiswa_tidak.text = tes[0]['beasiswa_tidak'] ?? ['null'];
+      selectedValueBeasiswa = tes[0]['beasiswa_tidak'] ?? ['null'];
       melanjutkan_sekolah_tidak.text =
           tes[0]['melanjutkan_sekolah_tidak'] ?? ['null'];
       jumlah_biaya_sekolah.text = tes[0]['jumlah_biaya_sekolah'] ?? ['null'];
@@ -536,6 +586,51 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                           Padding(
                             padding: const EdgeInsets.only(left: 20),
                             child: Text(
+                              "Status Pernikahan",
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          DropdownButtonHideUnderline(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: DropdownButton(
+                                isExpanded: true,
+                                value: selectedStatus,
+                                items: dropdownItemsStatus,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedStatus = newValue!;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      alignment: Alignment.center,
+                      height: size.height * 0.079,
+                      width: size.width,
+                      margin: EdgeInsets.symmetric(horizontal: 24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: Text(
                               "Status Kehamilan",
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
@@ -733,7 +828,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                                   ),
                                   child: TextFormField(
                                     controller: namaAnakSekolah,
-                                    enabled: false,
+                                    enabled: true,
                                     decoration: InputDecoration(
                                       labelText:
                                           "Nama Anggota Keluarga yang masih sekolah",
@@ -758,7 +853,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                                   ),
                                   child: TextFormField(
                                     controller: jenjang_pendidikan_ditempuh,
-                                    enabled: false,
+                                    enabled: true,
                                     decoration: InputDecoration(
                                       labelText:
                                           "Jenjang Pendidikan yang sedang ditempuh",
@@ -783,7 +878,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                                   ),
                                   child: TextFormField(
                                     controller: nama_sekolah,
-                                    enabled: false,
+                                    enabled: true,
                                     decoration: InputDecoration(
                                       labelText: "Nama Sekolah",
                                       contentPadding: EdgeInsets.symmetric(
@@ -807,7 +902,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                                   ),
                                   child: TextFormField(
                                     controller: kelas,
-                                    enabled: false,
+                                    enabled: true,
                                     decoration: InputDecoration(
                                       labelText: "Kelas / Tingkat",
                                       contentPadding: EdgeInsets.symmetric(
@@ -824,23 +919,46 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                                   children: [
                                     Container(
                                       alignment: Alignment.center,
-                                      height: size.height * 0.07,
+                                      height: size.height * 0.079,
                                       width: size.width * 0.4,
                                       margin: EdgeInsets.only(left: 24),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: TextFormField(
-                                        controller: kost_tidak,
-                                        enabled: false,
-                                        decoration: InputDecoration(
-                                          labelText: "Kost Atau Tidak",
-                                          contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10,
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 20),
+                                            child: Text(
+                                              "Kost atau Tidak ?",
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
                                           ),
-                                          border: InputBorder.none,
-                                        ),
+                                          DropdownButtonHideUnderline(
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 20),
+                                              child: DropdownButton(
+                                                hint: Text("Kost atau tidak"),
+                                                isExpanded: true,
+                                                value: selectedValueKost,
+                                                items: dropdownItemsKost,
+                                                onChanged: (String? newValue) {
+                                                  setState(() {
+                                                    selectedValueKost =
+                                                        newValue!;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     SizedBox(
@@ -848,24 +966,46 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                                     ),
                                     Container(
                                       alignment: Alignment.center,
-                                      height: size.height * 0.07,
+                                      height: size.height * 0.079,
                                       width: size.width * 0.4,
                                       margin: EdgeInsets.only(right: 24),
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: TextFormField(
-                                        controller: beasiswa_tidak,
-                                        enabled: false,
-                                        decoration: InputDecoration(
-                                          labelText:
-                                              "Pernah mendapat beasiswa tidak",
-                                          contentPadding: EdgeInsets.symmetric(
-                                            horizontal: 10,
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              right: 40,
+                                            ),
+                                            child: Text(
+                                              "Beasiswa tidak",
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
                                           ),
-                                          border: InputBorder.none,
-                                        ),
+                                          DropdownButtonHideUnderline(
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 20),
+                                              child: DropdownButton(
+                                                isExpanded: true,
+                                                value: selectedValueBeasiswa,
+                                                items: dropdownItemsKost,
+                                                onChanged: (String? newValue) {
+                                                  setState(() {
+                                                    selectedValueBeasiswa =
+                                                        newValue!;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -908,7 +1048,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                                   ),
                                   child: TextFormField(
                                     controller: jumlah_biaya_sekolah,
-                                    enabled: false,
+                                    enabled: true,
                                     decoration: InputDecoration(
                                       labelText: "Jumlah biaya sekolah",
                                       contentPadding: EdgeInsets.symmetric(
@@ -935,6 +1075,7 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
                           // await _postAllData();
                           await _editKeteranganSosial(
                               widget.jsonData[0]['nik'], widget.jsonData);
+                          await _editKeteranganPendidikan(idKosong);
                         },
                         child: Container(
                           alignment: Alignment.center,

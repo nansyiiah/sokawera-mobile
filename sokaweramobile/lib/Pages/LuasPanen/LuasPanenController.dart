@@ -3,7 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sokaweramobile/Pages/InputScreen/DetailLuasPanenController.dart';
+import 'package:sokaweramobile/Pages/LuasPanen/DetailLuasPanenController.dart';
 
 class LuasPanenController extends StatefulWidget {
   const LuasPanenController({super.key});
@@ -29,17 +29,6 @@ class _LuasPanenControllerState extends State<LuasPanenController> {
         centerTitle: true,
         title: Text("Luas Panen"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // showDeleteDialog(context);
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(

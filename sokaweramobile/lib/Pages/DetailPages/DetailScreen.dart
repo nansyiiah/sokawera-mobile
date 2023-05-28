@@ -136,8 +136,7 @@ class _DetailScreenState extends State<DetailScreen> {
     for (var element in jsonData['data']) {
       var warga = {
         "id": element["id"],
-        "nama_anggota_keluarga_masih_sekolah":
-            element["nama_anggota_keluarga_masih_sekolah"],
+        "nama": element["nama"],
         "jenjang_pendidikan_ditempuh": element["jenjang_pendidikan_ditempuh"],
         "nama_sekolah": element["nama_sekolah"],
         "kelas": element["kelas"],
@@ -492,7 +491,6 @@ class _DetailScreenState extends State<DetailScreen> {
                               var hubungan = data[index]['hubungan'];
                               return InkWell(
                                 onTap: () {
-                                  print(jsonPendidikan);
                                   Get.to(
                                     DetailKeteranganHubungan(
                                       jsonData: [jsonKetSosial[index]],

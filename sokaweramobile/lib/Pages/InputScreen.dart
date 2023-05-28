@@ -3,19 +3,21 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
-import 'package:sokaweramobile/Pages/InputScreen/DetailKeteranganKesehatan.dart';
-import 'package:sokaweramobile/Pages/InputScreen/DetailKuisionerPembangunan.dart';
-import 'package:sokaweramobile/Pages/InputScreen/KepemilikanAsetController.dart';
-import 'package:sokaweramobile/Pages/InputScreen/KeteranganKesehatanController.dart';
-import 'package:sokaweramobile/Pages/InputScreen/KeteranganKhususPendidikanController.dart';
-import 'package:sokaweramobile/Pages/InputScreen/KeteranganPerumahanController.dart';
-import 'package:sokaweramobile/Pages/InputScreen/KeteranganUsahaController.dart';
-import 'package:sokaweramobile/Pages/InputScreen/LuasPanenController.dart';
-import 'package:sokaweramobile/Pages/InputScreen/PenguasaanHewanTernakController.dart';
-import 'package:sokaweramobile/Pages/InputScreen/PenguasaanTanahController.dart';
-import 'InputScreen/KeteranganSosialAnggotaKeluargaController.dart';
-import 'InputScreen/KeteranganTempatController.dart';
-import 'InputScreen/KeteranganRespondenController.dart';
+import 'package:sokaweramobile/Pages/KejadianKelahiran/KejadianKelahiranController.dart';
+import 'package:sokaweramobile/Pages/KejadianKematian/KejadianKematianController.dart';
+import 'package:sokaweramobile/Pages/KeteranganKhususKesehatan/DetailKeteranganKesehatan.dart';
+import 'package:sokaweramobile/Pages/Kuisioner/DetailKuisionerPembangunan.dart';
+import 'package:sokaweramobile/Pages/DetailKeteranganPerumahan/KepemilikanAsetController.dart';
+import 'package:sokaweramobile/Pages/KeteranganKhususKesehatan/KeteranganKesehatanController.dart';
+import 'package:sokaweramobile/Pages/KeteranganKhususPendidikan/KeteranganKhususPendidikanController.dart';
+import 'package:sokaweramobile/Pages/DetailKeteranganPerumahan/KeteranganPerumahanController.dart';
+import 'package:sokaweramobile/Pages/KeteranganUsaha/KeteranganUsahaController.dart';
+import 'package:sokaweramobile/Pages/LuasPanen/LuasPanenController.dart';
+import 'package:sokaweramobile/Pages/KeteranganTernak/PenguasaanHewanTernakController.dart';
+import 'package:sokaweramobile/Pages/LuasPanen/PenguasaanTanahController.dart';
+import 'KeteranganSosial/KeteranganSosialAnggotaKeluargaController.dart';
+import 'KeteranganTempat/KeteranganTempatController.dart';
+import 'KeteranganResponden/KeteranganRespondenController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InputScreen extends StatefulWidget {
@@ -41,6 +43,8 @@ class _InputScreenState extends State<InputScreen> {
   bool _isFilled10 = false;
   bool _isFilled11 = false;
   bool _isFilled = false;
+  bool _isFilledKelahiran = false;
+  bool _isFilledKematian = false;
   bool isLoading = false;
   void initState() {
     _getKeteranganTempatFromLocal();
@@ -50,6 +54,8 @@ class _InputScreenState extends State<InputScreen> {
     _loadAllDatafromLocal();
     _loadDataKeteranganKhususPendidikan();
     _getKeteranganKesehatanFromLocal();
+    _loadKejadianKelahiran();
+    _loadKejadianKematian();
     _getStatusUsaha();
     _getKeteranganUsahaFromLocal();
     _loadPenguasaanTanahLocal();
@@ -80,6 +86,8 @@ class _InputScreenState extends State<InputScreen> {
     await _postKeteranganSosialData();
     await _postKeteranganKhususPendidikanData();
     await _postKeteranganKhususKesehatanData();
+    await _postKejadianKelahiran();
+    await _postKejadianKematian();
     await _postKeteranganUsahaData();
     await _postPenguasanTanahData();
     await _postLuasPanenData();
@@ -104,9 +112,85 @@ class _InputScreenState extends State<InputScreen> {
     }
   }
 
+  _loadKejadianKelahiran() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getStringList("detail_kejadian_kelahiran") ?? [];
+    if (user != null) {
+      setState(() {
+        _isFilledKelahiran = true;
+      });
+    } else {
+      setState(() {
+        _isFilledKelahiran = false;
+      });
+    }
+  }
+
+  _postKejadianKelahiran() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getStringList("detail_kejadian_kelahiran") ?? [];
+    if (user != null) {
+      for (var element in user) {
+        var parsing = jsonDecode(element);
+        var data = {
+          'nomor_kk': parsing['nomor_kk'],
+          'nama_bayi': parsing['nama_bayi'],
+          'tgl_lahir': parsing['tgl_lahir'],
+          'nama_ibu': parsing['nama_ibu'],
+          'nama_ayah': parsing['nama_ayah'],
+        };
+        var res = await Network().store(data, 'kejadian_kelahiran');
+        var body = json.decode(res.body);
+        if (body["status"] == 200) {
+          print("sukses insert kelahiran");
+        } else {
+          print(body);
+        }
+      }
+    }
+  }
+
+  _loadKejadianKematian() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getStringList("detail_kejadian_kematian") ?? [];
+    if (user != null) {
+      setState(() {
+        _isFilledKematian = true;
+      });
+    } else {
+      setState(() {
+        _isFilledKematian = false;
+      });
+    }
+  }
+
+  _postKejadianKematian() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = localStorage.getStringList("detail_kejadian_kematian") ?? [];
+    if (user != null) {
+      for (var element in user) {
+        var parsing = jsonDecode(element);
+        var data = {
+          'nomor_kk': parsing['nomor_kk'],
+          'nama': parsing['nama'],
+          'tgl_kematian': parsing['tgl_kematian'],
+          'penyebab_kematian': parsing['penyebab_kematian'],
+          'tempat_meninggal': parsing['tempat_meninggal'],
+        };
+        var res = await Network().store(data, 'kejadian_kematian');
+        var body = json.decode(res.body);
+        if (body["status"] == 200) {
+          print("sukses insert kematian");
+        } else {
+          print(body);
+        }
+      }
+    }
+  }
+
   _loadPenguasaanHewanTernak() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getString("penguasaan_hewan_ternak");
+    var user = localStorage.getString("penguasaan_hewan_ternak") ?? [];
     if (user != null) {
       setState(() {
         _isFilled11 = true;
@@ -470,8 +554,7 @@ class _InputScreenState extends State<InputScreen> {
       for (var element in keterangan_pendidikan) {
         var parsing = jsonDecode(element);
         var data = {
-          'nama_anggota_keluarga_masih_sekolah':
-              parsing['nama_anggota_keluarga_masih_sekolah'],
+          'nama': parsing['nama'],
           'jenjang_pendidikan_ditempuh': parsing['jenjang_pendidikan_ditempuh'],
           'nama_sekolah': parsing['nama_sekolah'],
           'kelas': parsing['kelas'],
@@ -761,7 +844,7 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
             Container(
-              height: size.height * 5,
+              height: size.height * 1.4,
               width: size.width,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -1099,7 +1182,7 @@ class _InputScreenState extends State<InputScreen> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  KeteranganKhususPendidikanController(),
+                                                  KejadianKelahiranController(),
                                             ),
                                           );
                                         },
@@ -1139,7 +1222,7 @@ class _InputScreenState extends State<InputScreen> {
                                                   // ),
                                                   Spacer(),
                                                   Text(
-                                                    "Kejadian Kelahiran",
+                                                    "Kejadian Kelahiran sejak 2020",
                                                     style: GoogleFonts.poppins(
                                                         fontSize: 14,
                                                         fontWeight:
@@ -1147,7 +1230,7 @@ class _InputScreenState extends State<InputScreen> {
                                                   ),
                                                   Spacer(),
                                                   Icon(
-                                                    _isFilled4
+                                                    _isFilledKelahiran
                                                         ? Icons
                                                             .check_box_outlined
                                                         : Icons
@@ -1168,7 +1251,7 @@ class _InputScreenState extends State<InputScreen> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  KeteranganKhususPendidikanController(),
+                                                  KejadianKematianController(),
                                             ),
                                           );
                                         },
@@ -1208,7 +1291,7 @@ class _InputScreenState extends State<InputScreen> {
                                                   // ),
                                                   Spacer(),
                                                   Text(
-                                                    "Kejadian Kematian",
+                                                    "Kejadian Kematian sejak 2020",
                                                     style: GoogleFonts.poppins(
                                                         fontSize: 14,
                                                         fontWeight:
@@ -1216,7 +1299,7 @@ class _InputScreenState extends State<InputScreen> {
                                                   ),
                                                   Spacer(),
                                                   Icon(
-                                                    _isFilled4
+                                                    _isFilledKematian
                                                         ? Icons
                                                             .check_box_outlined
                                                         : Icons
@@ -1782,7 +1865,7 @@ class _InputScreenState extends State<InputScreen> {
                                       ),
                                     ),
                                     SizedBox(
-                                      height: size.height * 0.2,
+                                      height: size.height * 0.05,
                                     ),
                                     SizedBox(
                                       height: size.height * 0.11,
@@ -1797,7 +1880,10 @@ class _InputScreenState extends State<InputScreen> {
                                         child: Container(
                                           alignment: Alignment.center,
                                           margin: EdgeInsets.only(
-                                              left: 24, right: 24, top: 40),
+                                              left: 24,
+                                              right: 24,
+                                              top: 40,
+                                              bottom: 10),
                                           padding: EdgeInsets.only(
                                               left: 24,
                                               right: 24,

@@ -668,46 +668,53 @@ class _DetailAllDataState extends State<DetailAllData> {
                   SizedBox(
                     height: size.height * 0.15,
                     width: size.width,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Get.to(
-                              DetailUserUsahaData(
-                                keterangan: "Keterangan Usaha",
-                                jsonData: [dataUsaha[index]],
-                              ),
-                            );
-                          },
-                          child: Container(
-                            height: size.height * 0.05,
-                            width: size.width,
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text("${dataUsaha[index]["nama"]}"),
+                    child: dataUsaha.isEmpty
+                        ? Center(
+                            child: Text("No Data"),
+                          )
+                        : ListView.builder(
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {
+                                  Get.to(
+                                    DetailUserUsahaData(
+                                      keterangan: "Keterangan Usaha",
+                                      jsonData: [dataUsaha[index]],
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  height: size.height * 0.05,
+                                  width: size.width,
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child:
+                                            Text("${dataUsaha[index]["nama"]}"),
+                                      ),
+                                      Spacer(),
+                                      Container(
+                                        padding: EdgeInsets.only(right: 20),
+                                        child: Icon(
+                                            Icons.keyboard_arrow_right_sharp),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Spacer(),
-                                Container(
-                                  padding: EdgeInsets.only(right: 20),
-                                  child: Icon(Icons.keyboard_arrow_right_sharp),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
+                            itemCount: dataUsaha.length,
                           ),
-                        );
-                      },
-                      itemCount: dataUsaha.length,
-                    ),
                   ),
                   Container(
                     padding: EdgeInsets.only(left: 24, top: 24, bottom: 10),
@@ -1004,41 +1011,46 @@ class _DetailAllDataState extends State<DetailAllData> {
                   SizedBox(
                     height: size.height * 0.15,
                     width: size.width,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {},
-                          child: Container(
-                            height: size.height * 0.05,
-                            width: size.width,
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.only(left: 10),
-                                  child: Text(
-                                      "${dataTernak[index]["jenis_ternak"]}"),
+                    child: dataTernak.isEmpty
+                        ? Center(
+                            child: Text("No Data"),
+                          )
+                        : ListView.builder(
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  height: size.height * 0.05,
+                                  width: size.width,
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                            "${dataTernak[index]["jenis_ternak"]}"),
+                                      ),
+                                      Spacer(),
+                                      Container(
+                                        padding: EdgeInsets.only(right: 20),
+                                        child: Text(
+                                            "${dataTernak[index]["jumlah_ternak"]}"),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Spacer(),
-                                Container(
-                                  padding: EdgeInsets.only(right: 20),
-                                  child: Text(
-                                      "${dataTernak[index]["jumlah_ternak"]}"),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
+                            itemCount: dataTernak.length,
                           ),
-                        );
-                      },
-                      itemCount: dataTernak.length,
-                    ),
                   ),
                   Container(
                     padding: EdgeInsets.only(left: 24, top: 24, bottom: 10),

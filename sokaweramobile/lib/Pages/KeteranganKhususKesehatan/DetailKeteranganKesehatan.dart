@@ -355,17 +355,6 @@ class _DetailKeteranganKesehatanState extends State<DetailKeteranganKesehatan> {
         centerTitle: true,
         title: Text("Keterangan ${widget.nama}"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // _deleteLocalKeteranganKesehatanData();
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(

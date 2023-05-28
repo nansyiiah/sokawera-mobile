@@ -6,7 +6,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sokaweramobile/Pages/DetailScreen.dart';
+import 'package:sokaweramobile/Pages/DetailPages/DetailScreen.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class KeteranganPerumahanController extends StatefulWidget {
@@ -284,17 +284,6 @@ class _KeteranganPerumahanControllerState
         centerTitle: true,
         title: Text("Keterangan Perumahan"),
         backgroundColor: Color(0xFF68b7d8),
-        actions: [
-          InkWell(
-            onTap: () {
-              // showDeleteDialog(context);
-            },
-            child: Container(
-              child: Icon(Icons.delete),
-              padding: EdgeInsets.only(right: 15),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
