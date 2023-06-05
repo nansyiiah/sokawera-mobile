@@ -156,7 +156,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     // _loadData(widget.item);
-    // print(widget.item);
+    print(widget.item);
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.93),
       body: SingleChildScrollView(

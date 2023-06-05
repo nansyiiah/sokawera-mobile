@@ -9,7 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class PenguasaanTanahController extends StatefulWidget {
-  const PenguasaanTanahController({super.key});
+  final String jenisPenguasaanTanah;
+  const PenguasaanTanahController(
+      {super.key, required this.jenisPenguasaanTanah});
 
   @override
   State<PenguasaanTanahController> createState() =>
@@ -24,12 +26,13 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
   _getTotalData() async {
     if (total_lahan == null) {
       total_lahan = 0;
+    } else {
+      setState(() {
+        total_lahan = int.parse(lahanDimilikiController.text) +
+            int.parse(lahanPihakLainController.text) -
+            int.parse(lahanBeradaPihakLainController.text);
+      });
     }
-    setState(() {
-      total_lahan = int.parse(lahanDimilikiController.text) +
-          int.parse(lahanPihakLainController.text) -
-          int.parse(lahanBeradaPihakLainController.text);
-    });
   }
 
   _getNomorKKLocal() async {
@@ -83,7 +86,7 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
   TextEditingController lahanBeradaPihakLainController =
       TextEditingController();
 
-  String selectedValue1 = "Lahan tempat tinggal";
+  String selectedValue1 = "";
 
   List<DropdownMenuItem<String>> get dropdownItems1 {
     List<DropdownMenuItem<String>> menuItems1 = [
@@ -93,6 +96,7 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
       DropdownMenuItem(
           child: Text("Lahan pertanian bukan sawah"),
           value: "Lahan pertanian bukan sawah"),
+      DropdownMenuItem(child: Text("Lahan Lainnya"), value: "Lahan Lainnya"),
     ];
     return menuItems1;
   }
@@ -123,6 +127,7 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
   void initState() {
     // TODO: implement initState
     _getNomorKKLocal();
+    selectedValue1 = widget.jenisPenguasaanTanah.toString();
     super.initState();
   }
 
@@ -155,6 +160,7 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
       showAlertDialog(context);
     }
 
+    print(widget.jenisPenguasaanTanah);
     return Scaffold(
       appBar: AppBar(
         elevation: 2,

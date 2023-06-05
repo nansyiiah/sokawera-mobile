@@ -14,7 +14,8 @@ import 'package:sokaweramobile/Pages/DetailKeteranganPerumahan/KeteranganPerumah
 import 'package:sokaweramobile/Pages/KeteranganUsaha/KeteranganUsahaController.dart';
 import 'package:sokaweramobile/Pages/LuasPanen/LuasPanenController.dart';
 import 'package:sokaweramobile/Pages/KeteranganTernak/PenguasaanHewanTernakController.dart';
-import 'package:sokaweramobile/Pages/LuasPanen/PenguasaanTanahController.dart';
+import 'package:sokaweramobile/Pages/PenguasaanTanah/ListPenguasaanTanah.dart';
+import 'package:sokaweramobile/Pages/PenguasaanTanah/PenguasaanTanahController.dart';
 import 'KeteranganSosial/KeteranganSosialAnggotaKeluargaController.dart';
 import 'KeteranganTempat/KeteranganTempatController.dart';
 import 'KeteranganResponden/KeteranganRespondenController.dart';
@@ -114,7 +115,7 @@ class _InputScreenState extends State<InputScreen> {
 
   _loadKejadianKelahiran() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getStringList("detail_kejadian_kelahiran") ?? [];
+    var user = localStorage.getStringList("detail_kejadian_kelahiran");
     if (user != null) {
       setState(() {
         _isFilledKelahiran = true;
@@ -124,11 +125,12 @@ class _InputScreenState extends State<InputScreen> {
         _isFilledKelahiran = false;
       });
     }
+    print(user);
   }
 
   _postKejadianKelahiran() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getStringList("detail_kejadian_kelahiran") ?? [];
+    var user = localStorage.getStringList("detail_kejadian_kelahiran");
     if (user != null) {
       for (var element in user) {
         var parsing = jsonDecode(element);
@@ -152,7 +154,7 @@ class _InputScreenState extends State<InputScreen> {
 
   _loadKejadianKematian() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getStringList("detail_kejadian_kematian") ?? [];
+    var user = localStorage.getStringList("detail_kejadian_kematian");
     if (user != null) {
       setState(() {
         _isFilledKematian = true;
@@ -190,13 +192,13 @@ class _InputScreenState extends State<InputScreen> {
 
   _loadPenguasaanHewanTernak() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getString("penguasaan_hewan_ternak") ?? [];
+    var user = localStorage.getString("penguasaan_hewan_ternak");
     if (user != null) {
       setState(() {
         _isFilled11 = true;
       });
     } else {
-      return null;
+      _isFilled11 = false;
     }
   }
 
@@ -844,7 +846,7 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ),
             Container(
-              height: size.height * 1.4,
+              height: size.height * 1.7,
               width: size.width,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -1458,7 +1460,7 @@ class _InputScreenState extends State<InputScreen> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  PenguasaanTanahController(),
+                                                  ListPenguasaanTanah(),
                                             ),
                                           );
                                         },
@@ -1519,72 +1521,68 @@ class _InputScreenState extends State<InputScreen> {
                                         ),
                                       ),
                                     ),
-                                    Visibility(
-                                      visible: _isHaveLuasPanen ? true : false,
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  LuasPanenController(),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                LuasPanenController(),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: size.height * 0.06,
+                                        margin: EdgeInsets.only(
+                                          left: 24,
+                                          right: 24,
+                                          top: 24,
+                                        ),
+                                        padding: EdgeInsets.only(
+                                            left: 10, right: 10),
+                                        alignment: Alignment.center,
+                                        width: size.width,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              blurRadius: 0.3,
+                                              color: Colors.grey,
+                                            )
+                                          ],
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Stack(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                // Text(
+                                                //   "Step 8:",
+                                                //   style: GoogleFonts.poppins(
+                                                //     fontSize: 14,
+                                                //     fontWeight:
+                                                //         FontWeight.w400,
+                                                //   ),
+                                                // ),
+                                                Spacer(),
+                                                Text(
+                                                  "Luas Panen",
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                                Spacer(),
+                                                Icon(
+                                                  _isFilled8
+                                                      ? Icons.check_box_outlined
+                                                      : Icons
+                                                          .check_box_outline_blank,
+                                                ),
+                                              ],
                                             ),
-                                          );
-                                        },
-                                        child: Container(
-                                          height: size.height * 0.06,
-                                          margin: EdgeInsets.only(
-                                            left: 24,
-                                            right: 24,
-                                            top: 24,
-                                          ),
-                                          padding: EdgeInsets.only(
-                                              left: 10, right: 10),
-                                          alignment: Alignment.center,
-                                          width: size.width,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                blurRadius: 0.3,
-                                                color: Colors.grey,
-                                              )
-                                            ],
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Stack(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  // Text(
-                                                  //   "Step 8:",
-                                                  //   style: GoogleFonts.poppins(
-                                                  //     fontSize: 14,
-                                                  //     fontWeight:
-                                                  //         FontWeight.w400,
-                                                  //   ),
-                                                  // ),
-                                                  Spacer(),
-                                                  Text(
-                                                    "Luas Panen",
-                                                    style: GoogleFonts.poppins(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400),
-                                                  ),
-                                                  Spacer(),
-                                                  Icon(
-                                                    _isFilled8
-                                                        ? Icons
-                                                            .check_box_outlined
-                                                        : Icons
-                                                            .check_box_outline_blank,
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                          ],
                                         ),
                                       ),
                                     ),
@@ -1851,7 +1849,7 @@ class _InputScreenState extends State<InputScreen> {
                                                   ),
                                                   Spacer(),
                                                   Icon(
-                                                    _isFilled11
+                                                    _isFilled12
                                                         ? Icons
                                                             .check_box_outlined
                                                         : Icons
