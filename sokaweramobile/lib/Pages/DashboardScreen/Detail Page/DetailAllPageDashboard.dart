@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/DetailKeteranganPerumahan/DetailKeteranganPerumahanData.dart';
 import 'package:sokaweramobile/Pages/DetailPages/DetailUserUsahaData.dart';
-import 'package:sokaweramobile/Pages/KejadianKelahiran/DetailKejadianKelahiran.dart';
 import 'package:sokaweramobile/Pages/KejadianKelahiran/DetailKejadianKelahiranData.dart';
 import 'package:sokaweramobile/Pages/KejadianKematian/DetailKejadianKematianData.dart';
 import 'package:sokaweramobile/Pages/KeteranganKhususKesehatan/DetailKeteranganKhususKesehatanData.dart';
@@ -59,13 +58,13 @@ class _DetailAllPageDashboardState extends State<DetailAllPageDashboard> {
   _loadKejadianKelahiran() async {
     var res = await Network().getData('kejadian_kelahiran');
     var jsonData = jsonDecode(res.body);
-    data_kelahiran.add(jsonData);
+    data_kelahiran.add(jsonData["kelahiran"]);
   }
 
   _loadKejadianKematian() async {
     var res = await Network().getData('kejadian_kematian');
     var jsonData = jsonDecode(res.body);
-    data_kematian.add(jsonData);
+    data_kematian.add(jsonData["kematian"]);
   }
 
   _loadKeteranganUsaha() async {
@@ -102,6 +101,7 @@ class _DetailAllPageDashboardState extends State<DetailAllPageDashboard> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -801,7 +801,7 @@ class _DetailAllPageDashboardState extends State<DetailAllPageDashboard> {
                           Spacer(),
                           Container(
                             padding: EdgeInsets.only(right: 20),
-                            child: Text("${data_kelahiran.length}"),
+                            child: Text("${data_kelahiran[0].length}"),
                           ),
                           Icon(Icons.arrow_right_rounded),
                         ],
@@ -837,7 +837,7 @@ class _DetailAllPageDashboardState extends State<DetailAllPageDashboard> {
                           Spacer(),
                           Container(
                             padding: EdgeInsets.only(right: 20),
-                            child: Text("${data_kematian.length}"),
+                            child: Text("${data_kematian[0].length}"),
                           ),
                           Icon(Icons.arrow_right_rounded),
                         ],

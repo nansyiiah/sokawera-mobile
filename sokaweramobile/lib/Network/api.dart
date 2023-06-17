@@ -38,6 +38,11 @@ class Network {
     return await http.delete(Uri.parse(fullURL), headers: _setHeaders());
   }
 
+  deleteData(apiURL, nik) async {
+    var fullURL = "https://api.itsmegru.com/api/" + apiURL + "/delete/" + nik;
+    return await http.delete(Uri.parse(fullURL), headers: _setHeaders());
+  }
+
   _setHeaders() => {
         'Content-type': 'application/json',
         'Accept': 'application/json',

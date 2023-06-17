@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:pie_chart/pie_chart.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/DashboardScreen/Detail%20Page/DetailAllPageDashboard.dart';
@@ -32,7 +31,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List data_merantau = [];
   List data_hamil = [];
   late Future myFuture;
-  late List<Widget> _children;
   @override
   void initState() {
     myFuture = _loadAllData();

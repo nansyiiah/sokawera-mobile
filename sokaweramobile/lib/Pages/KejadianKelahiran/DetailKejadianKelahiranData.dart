@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
+import 'package:sokaweramobile/Pages/KejadianKelahiran/EditKejadianKelahiran.dart';
 
 class DetailKejadianKelahiranData extends StatefulWidget {
   final String judul;
@@ -89,6 +91,10 @@ class _DetailKejadianKelahiranDataState
                                   //     jsonData: [dataUsaha[index]],
                                   //   ),
                                   // );
+                                  // print(datas[0]["kelahiran"][1]);
+                                  Get.to(EditKejadianKelahiran(
+                                    data: [datas[0]["kelahiran"][index]],
+                                  ));
                                 },
                                 child: Container(
                                   height: size.height * 0.05,

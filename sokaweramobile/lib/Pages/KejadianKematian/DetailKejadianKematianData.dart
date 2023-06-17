@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sokaweramobile/Network/api.dart';
+import 'package:sokaweramobile/Pages/KejadianKelahiran/EditKejadianKelahiran.dart';
+import 'package:sokaweramobile/Pages/KejadianKematian/EditKejadianKematian.dart';
 
 class DetailKejadianKematianData extends StatefulWidget {
   final String judul;
@@ -89,6 +92,8 @@ class _DetailKejadianKematianDataState
                                   //     jsonData: [dataUsaha[index]],
                                   //   ),
                                   // );
+                                  Get.to(EditKejadianKematian(
+                                      data: [datas[0]["kematian"][index]]));
                                 },
                                 child: Container(
                                   height: size.height * 0.05,
