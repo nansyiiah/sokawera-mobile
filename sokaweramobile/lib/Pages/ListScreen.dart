@@ -17,6 +17,7 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  TextEditingController editingController = TextEditingController();
   @override
   String tokenLuar = "";
   _loadUserData() async {
@@ -39,7 +40,41 @@ class _ListScreenState extends State<ListScreen> {
   var element = {};
   var newList = [];
   List rtList = [];
+  var foundUser = [];
+  var items = [];
   var warga_gaming = {};
+  late Future myFuture;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    myFuture = getJsonRespondenData();
+    foundUser = rtList;
+    super.initState();
+  }
+
+  void filterSearchResults(String query) {
+    // setState(() {
+    //   items = rtList.where((item) => item.nama_kepala_keluarga).toList();
+    // });
+    List results = [];
+    if (query.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      results = rtList;
+    } else {
+      results = rtList
+          .where((user) => user["nama_kepala_keluarga"]
+              .toLowerCase()
+              .contains(query.toLowerCase()))
+          .toList();
+      // we use the toLowerCase() method to make it case-insensitive
+    }
+    setState(() {
+      foundUser = results;
+    });
+
+    // print(rtList[0]["nama_kepala_keluarga"].contains(query));
+  }
 
   getJsonRespondenData() async {
     var response = await http.get(
@@ -105,11 +140,14 @@ class _ListScreenState extends State<ListScreen> {
       backgroundColor: Color(0xFF68b7d8),
       body: SingleChildScrollView(
         child: FutureBuilder(
-          future: getJsonRespondenData(),
+          future: myFuture,
           builder: (context, snapshot) {
             if (snapshot.hasData == false) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: Padding(
+                  padding: EdgeInsets.only(top: size.height * 0.3),
+                  child: CircularProgressIndicator(),
+                ),
               );
             } else {
               var data = (snapshot.data as List<KeteranganResponden>).toList();
@@ -188,109 +226,154 @@ class _ListScreenState extends State<ListScreen> {
                                 ),
                               ],
                             ),
+                            Container(
+                              height: 55,
+                              width: size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 24),
+                              child: TextField(
+                                onChanged: (value) {
+                                  filterSearchResults(value);
+                                },
+                                controller: editingController,
+                                decoration: InputDecoration(
+                                  labelText: "Search",
+                                  hintText: "Search",
+                                  prefixIcon: Icon(Icons.search),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(25.0),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: size.height * 0.5,
                               width: size.width,
-                              child: ListView.builder(
-                                padding: EdgeInsets.only(top: 10),
-                                shrinkWrap: true,
-                                itemCount: rtList.length,
-                                itemBuilder: (context, index) {
-                                  var nama =
-                                      rtList[index]["nama_kepala_keluarga"];
-                                  var rt = rtList[index]["rt"];
-                                  var nik = rtList[index]["nik_kk"];
-                                  var rw = rtList[index]["rw"];
-                                  return InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => DetailScreen(
-                                            item: rtList[index]["id"],
-                                            nik: rtList[index]['nik_kk'],
-                                            // kk: rtList[index]['nik_kk'],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.only(
-                                        left: 24,
-                                        right: 24,
-                                        bottom: 24,
-                                      ),
-                                      height: size.height * 0.1,
-                                      width: size.width,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              blurRadius: 3, color: Colors.grey)
-                                        ],
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Stack(
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10, top: 15),
-                                                    child: Text(
-                                                      nama,
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Spacer(),
-                                                  Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: 10, top: 15),
-                                                    child: Text(
-                                                      "RT $rt / RW $rw",
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.only(
-                                                    left: 10, top: 5),
-                                                child: Text(
-                                                  nik,
-                                                  style: GoogleFonts.poppins(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.grey,
-                                                  ),
+                              child: foundUser.isNotEmpty
+                                  ? ListView.builder(
+                                      padding: EdgeInsets.only(top: 10),
+                                      shrinkWrap: true,
+                                      itemCount: foundUser.length,
+                                      itemBuilder: (context, index) {
+                                        var nama = rtList[index]
+                                            ["nama_kepala_keluarga"];
+                                        var rt = rtList[index]["rt"];
+                                        var nik = rtList[index]["nik_kk"];
+                                        var rw = rtList[index]["rw"];
+                                        return InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailScreen(
+                                                  item: rtList[index]["id"],
+                                                  nik: rtList[index]['nik_kk'],
+                                                  // kk: rtList[index]['nik_kk'],
                                                 ),
                                               ),
-                                            ],
+                                            );
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(
+                                              left: 24,
+                                              right: 24,
+                                              bottom: 24,
+                                            ),
+                                            height: size.height * 0.1,
+                                            width: size.width,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    blurRadius: 3,
+                                                    color: Colors.grey)
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Stack(
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 10,
+                                                                  top: 15),
+                                                          child: Text(
+                                                            foundUser[index][
+                                                                    "nama_kepala_keluarga"]
+                                                                .toString(),
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Spacer(),
+                                                        Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  right: 10,
+                                                                  top: 15),
+                                                          child: Text(
+                                                            "RT ${foundUser[index]["rt"].toString()} / RW ${foundUser[index]["rw"].toString()}",
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Container(
+                                                      padding: EdgeInsets.only(
+                                                          left: 10, top: 5),
+                                                      child: Text(
+                                                        foundUser[index]
+                                                                ["nik_kk"]
+                                                            .toString(),
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ],
+                                        );
+                                      },
+                                    )
+                                  : Center(
+                                      child: const Text(
+                                        'No results found',
+                                        style: TextStyle(fontSize: 24),
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
                             ),
                           ],
                         ),
