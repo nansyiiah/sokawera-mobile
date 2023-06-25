@@ -287,27 +287,29 @@ class _InputScreenState extends State<InputScreen> {
 
   _postPenguasanTanahData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var penguasaan_tanah = localStorage.getString('penguasaan_tanah');
-    var parsing = jsonDecode(penguasaan_tanah!);
-    var data = {
-      'jenis_lahan': parsing['jenis_lahan'],
-      'nomor_urut_bidang': parsing['nomor_urut_bidang'],
-      'lokasi_lahan': parsing['lokasi_lahan'],
-      'nomor_blok_tanah': parsing['nomor_blok_tanah'],
-      'tanah_bersertifikat': parsing['tanah_bersertifikat'],
-      'nama_sppt_sesuai': parsing['nama_sppt_sesuai'],
-      'lahan_dimiliki': parsing['lahan_dimiliki'],
-      'lahan_pihak_lain': parsing['lahan_pihak_lain'],
-      'lahan_berada_pihak_lain': parsing['lahan_berada_pihak_lain'],
-      'lahan_dikuasai': parsing['lahan_dikuasai'],
-      'nomor_kk': parsing['nomor_kk'],
-    };
-    var res = await Network().store(data, 'penguasaan_tanah');
-    var body = json.decode(res.body);
-    if (body["status"] == 200) {
-      print("sukses insert penguasaan tanah");
-    } else {
-      print("error penguasaan tanah");
+    var penguasaan_tanah = localStorage.getString('penguasaan_tanah') ?? "";
+    if (penguasaan_tanah != "") {
+      var parsing = jsonDecode(penguasaan_tanah);
+      var data = {
+        'jenis_lahan': parsing['jenis_lahan'],
+        'nomor_urut_bidang': parsing['nomor_urut_bidang'],
+        'lokasi_lahan': parsing['lokasi_lahan'],
+        'nomor_blok_tanah': parsing['nomor_blok_tanah'],
+        'tanah_bersertifikat': parsing['tanah_bersertifikat'],
+        'nama_sppt_sesuai': parsing['nama_sppt_sesuai'],
+        'lahan_dimiliki': parsing['lahan_dimiliki'],
+        'lahan_pihak_lain': parsing['lahan_pihak_lain'],
+        'lahan_berada_pihak_lain': parsing['lahan_berada_pihak_lain'],
+        'lahan_dikuasai': parsing['lahan_dikuasai'],
+        'nomor_kk': parsing['nomor_kk'],
+      };
+      var res = await Network().store(data, 'penguasaan_tanah');
+      var body = json.decode(res.body);
+      if (body["status"] == 200) {
+        print("sukses insert penguasaan tanah");
+      } else {
+        print("error penguasaan tanah");
+      }
     }
   }
 

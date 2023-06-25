@@ -178,28 +178,6 @@ class _DetailPerumahanDataState extends State<DetailPerumahanData> {
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
-        actions: [
-          Container(
-            padding: EdgeInsets.only(right: 10),
-            child: PopupMenuButton<MenuItem>(
-              onSelected: (value) {
-                if (value == MenuItem.item1) {
-                  // _deleteData(widget.nik);
-                }
-              },
-              icon: Icon(
-                Icons.more_horiz,
-                color: Colors.black,
-              ),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: MenuItem.item1,
-                  child: Text("Delete"),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(

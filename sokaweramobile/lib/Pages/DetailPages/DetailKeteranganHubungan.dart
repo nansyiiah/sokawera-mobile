@@ -278,7 +278,6 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
     if (body['code'] == 200) {
       showAlertDialog(context);
     } else {
-      print(body);
       showErrorDialog(context);
     }
   }
@@ -379,7 +378,10 @@ class _DetailKeteranganHubunganState extends State<DetailKeteranganHubungan> {
             builder: (context, snapshot) {
               if (snapshot.hasData == false) {
                 return Center(
-                  child: CircularProgressIndicator(),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: size.height * 0.3),
+                    child: CircularProgressIndicator(),
+                  ),
                 );
               } else {
                 var data = (snapshot.data as List).toList();

@@ -12,6 +12,7 @@ import 'package:sokaweramobile/Network/api.dart';
 import 'package:sokaweramobile/Pages/DashboardScreen/DashboardScreen.dart';
 import 'package:sokaweramobile/Pages/DetailPages/DetailAllData.dart';
 import 'package:sokaweramobile/Pages/DetailPages/DetailKeteranganHubungan.dart';
+import 'package:sokaweramobile/Pages/LengkapiData/main.dart';
 import 'package:sokaweramobile/Pages/components/BottomNavBar.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   List data = [];
+  List data_kurang = [];
   late Future myFuture;
   var anak = {};
   var id;
@@ -34,6 +36,16 @@ class _DetailScreenState extends State<DetailScreen> {
   var nama_perempuan = [];
   var jsonKetSosial = [];
   var jsonPendidikan = [];
+  List dataResponden = [];
+  List dataSosial = [];
+  List dataKesehatan = [];
+  List dataUsaha = [];
+  List dataTernak = [];
+  List dataKorban = [];
+  List dataPerumahan = [];
+  List dataPembangunan = [];
+  List dataPendidikan = [];
+  List dataAset = [];
   var dusun, no_urut_rumah, rt, rw, nama_jalan;
 
   _deleteData(nik) async {
@@ -75,13 +87,248 @@ class _DetailScreenState extends State<DetailScreen> {
       data.add(anak);
     }
     // _loadData(widget.item);
-    _loadData(widget.nik);
+    await _loadData(widget.nik);
+    await _loadResponden(widget.nik);
+    await _loadSosial(widget.nik);
+    await _loadPendidikan(widget.nik);
+    await _loadKesehatan(widget.nik);
+    await _loadUsaha(widget.nik);
+    await _loadAset(widget.nik);
+    await _loadTernak(widget.nik);
+    await _loadEval(widget.nik);
+    await _loadKeteranganPerumahan(widget.nik);
+    await getStatus();
     return data;
   }
 
-  void initState() {
-// TODO: implement initState
+  _loadResponden(nik) async {
+    var res = await Network().getData('keterangan_responden/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    for (var element in jsonData['data']) {
+      var warga = {
+        'jumlah_anggota_keluarga_sesuai_kk':
+            element['jumlah_anggota_keluarga_sesuai_kk'],
+        'jumlah_anggota_keluarga_menyusui':
+            element['jumlah_anggota_keluarga_menyusui'],
+        'jumlah_anggota_keluarga_tinggal_dirumah':
+            element['jumlah_anggota_keluarga_tinggal_dirumah'],
+        'jumlah_anggota_keluarga_sedang_tki':
+            element['jumlah_anggota_keluarga_sedang_tki'],
+        'jumlah_anggota_keluarga_ikatan_dinas':
+            element['jumlah_anggota_keluarga_ikatan_dinas'],
+        'jumlah_anggota_keluarga_jaminan_kesehatan':
+            element['jumlah_anggota_keluarga_jaminan_kesehatan'],
+      };
+      dataResponden.add(warga);
+    }
+    return dataResponden;
+  }
 
+  _loadSosial(nik) async {
+    var res = await Network().getData('keterangan_sosial/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    var warga = {
+      'jml_hamil': jsonData['jml_hamil'],
+      'jml_sekolah': jsonData['jml_sekolah']
+    };
+    dataSosial.add(warga);
+    return dataSosial;
+  }
+
+  _loadPendidikan(nik) async {
+    var res =
+        await Network().getData('keterangan_khusus_pendidikan/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    if (jsonData['data'].length == 0) {
+      var warga = {
+        'jml_beasiswa': jsonData['jml_beasiswa'],
+        'jml_kost': jsonData['jml_kost'],
+      };
+      dataPendidikan.add(warga);
+    } else {
+      var warga = {
+        'jml_beasiswa': jsonData['jml_beasiswa'],
+        'jml_kost': jsonData['jml_kost'],
+      };
+      dataPendidikan.add(warga);
+    }
+    return dataPendidikan;
+  }
+
+  _loadKesehatan(nik) async {
+    var res = await Network().getData('keterangan_kesehatan/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    var warga = {
+      'jumlah_orang_sudah_vaksin': jsonData['jumlah_orang_sudah_vaksin'],
+      'jumlah_orang_penyakit': jsonData['jumlah_orang_penyakit'],
+      'jumlah_pernah_covid': jsonData['jumlah_pernah_covid'],
+    };
+    dataKesehatan.add(warga);
+    return data;
+  }
+
+  _loadUsaha(nik) async {
+    var res = await Network().getData('keterangan_usaha/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    if (jsonData['data'].length == 0) {
+      dataUsaha = [];
+    } else {
+      for (var element in jsonData['data']) {
+        var warga = {
+          'id': "${element['id']}",
+          'nama': element['nama'],
+          "nik": element["nik"],
+          "nomor_kk": element["nomor_kk"],
+          "lokasi_usaha": element["lokasi_usaha"],
+          "tempat_usaha": element["tempat_usaha"],
+          "jumlah_karyawan": element["jumlah_karyawan"],
+          "pekerja_tetap_dibayar": element["pekerja_tetap_dibayar"],
+          "pekerja_keluarga_tdk_dibayar":
+              element["pekerja_keluarga_tdk_dibayar"],
+          "komoditas": element["komoditas"],
+          "memiliki_IUMK": element["memiliki_IUMK"],
+          "omset_penjualan": element["omset_penjualan"],
+        };
+        dataUsaha.add(warga);
+      }
+    }
+    return dataUsaha;
+  }
+
+  bool _isHaveAset = true;
+  _loadAset(nik) async {
+    var res = await Network().getData('kepemilikan_aset/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+
+    if (jsonData['data'].length == 0) {
+      dataAset = [];
+      data_kurang.add('Kepemilikan Aset');
+      setState(() {
+        _isHaveAset = false;
+      });
+    } else {
+      for (var element in jsonData['data']) {
+        var warga = {
+          "ac": element["ac"],
+          "kulkas": element["kulkas"],
+          "mesin_cuci": element["mesin_cuci"],
+          "televisi": element["televisi"],
+          "komputer_laptop": element["komputer_laptop"],
+          "mobil": element["mobil"],
+          "motor": element["motor"],
+          "sepeda": element["sepeda"],
+        };
+        dataAset.add(warga);
+      }
+      setState(() {
+        _isHaveAset = true;
+      });
+    }
+    return dataAset;
+  }
+
+  _loadTernak(nik) async {
+    var res = await Network().getData('kepemilikan_hewan/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    var data = [];
+    if (jsonData['kepemilikan_ternak'].length == 0) {
+      dataTernak = [];
+    } else {
+      for (var element in jsonData['kepemilikan_ternak']) {
+        var warga = {
+          'jenis_ternak': element["jenis_ternak"],
+          'jumlah_ternak': element["jumlah_ternak_dikuasai"],
+        };
+        dataTernak.add(warga);
+      }
+    }
+    return data;
+  }
+
+  bool _isFilledKuisioner = true;
+  _loadEval(nik) async {
+    var res = await Network().getData('eval_pembangunan/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    if (jsonData['data'].length == 0) {
+      data_kurang.add('Kuisioner');
+      setState(() {
+        _isFilledKuisioner = false;
+      });
+    } else {
+      for (var element in jsonData['data']) {
+        var warga = {
+          'jml_anggota_keluarga_korban_kejahatan':
+              element['jml_anggota_keluarga_korban_kejahatan'],
+          'jml_anggota_keluarga_korban_bencana':
+              element['jml_anggota_keluarga_korban_bencana'],
+        };
+        dataKorban.add(warga);
+      }
+      _isFilledKuisioner = true;
+    }
+
+    return dataKorban;
+  }
+
+  bool _isFilledKeteranganPerumahan = true;
+  _loadKeteranganPerumahan(nik) async {
+    var res = await Network().getData('keterangan_perumahan/nik/${nik}');
+    var jsonData = jsonDecode(res.body);
+    if (jsonData['data'].length == 0) {
+      data_kurang.add('Keterangan Perumahan');
+      setState(() {
+        _isFilledKeteranganPerumahan = false;
+      });
+    } else {
+      for (var element in jsonData['data']) {
+        var warga = {
+          "status_penggunaan_bangunan_tempat_tinggal":
+              element["status_penggunaan_bangunan_tempat_tinggal"],
+          "status_lahan_bangunan_tempat_tinggal":
+              element["status_lahan_bangunan_tempat_tinggal"],
+          "jumlah_kk_tinggal_dibangunan":
+              element["jumlah_kk_tinggal_dibangunan"],
+          "luas_lantai": element["luas_lantai"],
+          "jenis_lantai_terluas": element["jenis_lantai_terluas"],
+          "jenis_dinding_terluas": element["jenis_dinding_terluas"],
+          "jumlah_ruangan_seluruhnya": element["jumlah_ruangan_seluruhnya"],
+          "sumber_air_minum": element["sumber_air_minum"],
+          "sumber_penerangan_utama": element["sumber_penerangan_utama"],
+          "daya_terpasang": element["daya_terpasang"],
+          "bahan_bakar_utama_memasak": element["bahan_bakar_utama_memasak"],
+          "penggunaan_fasilitas_tempat_bab":
+              element["penggunaan_fasilitas_tempat_bab"],
+          "jenis_kloset": element["jenis_kloset"],
+          "tempat_pembuangan_akhir_tinja":
+              element["tempat_pembuangan_akhir_tinja"],
+          "jumlah_fasilitas_cuci_tangan":
+              element["jumlah_fasilitas_cuci_tangan"],
+          "nomor_kk": element["nomor_kk"],
+        };
+        dataPerumahan.add(warga);
+      }
+      setState(() {
+        _isFilledKeteranganPerumahan = true;
+      });
+    }
+
+    return dataPerumahan;
+  }
+
+  bool _statusAll = false;
+  getStatus() async {
+    if (_isFilledKeteranganPerumahan && _isFilledKuisioner && _isHaveAset) {
+      setState(() {
+        _statusAll = true;
+      });
+    } else {
+      setState(() {
+        _statusAll = false;
+      });
+    }
+  }
+
+  void initState() {
     _loadKeteranganSosial(widget.nik);
     _loadKeteranganKhususPendidikan(widget.nik);
     myFuture = _fetchData(widget.item);
@@ -91,7 +338,6 @@ class _DetailScreenState extends State<DetailScreen> {
   _loadData(nik_kk) async {
     var res = await Network().getData('keterangan_tempat/nik/${nik_kk}');
     var jsonData = jsonDecode(res.body);
-    // print(jsonData[0]);
 
     setState(() {
       nama_jalan = jsonData["keterangan_tempat"][0]["nama_jalan"];
@@ -155,8 +401,6 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    // _loadData(widget.item);
-    print(widget.item);
     return Scaffold(
       backgroundColor: Colors.white.withOpacity(0.93),
       body: SingleChildScrollView(
@@ -165,7 +409,10 @@ class _DetailScreenState extends State<DetailScreen> {
           builder: (context, snapshot) {
             if (snapshot.hasData == false) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: Padding(
+                  padding: EdgeInsets.only(top: size.height * 0.3),
+                  child: CircularProgressIndicator(),
+                ),
               );
             } else {
               var data = (snapshot.data as List).toList();
@@ -413,50 +660,106 @@ class _DetailScreenState extends State<DetailScreen> {
                   SizedBox(
                     height: 20,
                   ),
-                  InkWell(
-                    onTap: () {
-                      Get.to(DetailAllData(
-                        name: nama,
-                        nik: nik_kk,
-                      ));
-                    },
-                    child: Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 24,
-                      ),
-                      height: size.height * 0.055,
-                      width: size.width,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(color: Colors.grey, blurRadius: 1),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(left: 25),
-                            child: Text(
-                              "Detail semua data",
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black,
+                  Visibility(
+                    visible: _statusAll ? true : false,
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(DetailAllData(
+                          name: nama,
+                          nik: nik_kk,
+                        ));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 24,
+                        ),
+                        height: size.height * 0.055,
+                        width: size.width,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(color: Colors.grey, blurRadius: 1),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(left: 25),
+                              child: Text(
+                                "Detail semua data",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
-                          ),
-                          Spacer(),
-                          Container(
-                            padding: EdgeInsets.only(right: 20),
-                            child: Icon(
-                              Icons.keyboard_arrow_right_sharp,
-                              color: Colors.grey,
+                            Spacer(),
+                            Container(
+                              padding: EdgeInsets.only(right: 20),
+                              child: Icon(
+                                Icons.keyboard_arrow_right_sharp,
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Visibility(
+                    visible: _statusAll ? false : true,
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(LengkapiDataMain(
+                          data: data_kurang,
+                          nik: widget.nik,
+                        ));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 24,
+                        ),
+                        height: size.height * 0.055,
+                        width: size.width,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(color: Colors.grey, blurRadius: 1),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(left: 25),
+                              child: Text(
+                                "Lengkapi data",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ),
-                          )
-                        ],
+                            Spacer(),
+                            Container(
+                              padding: EdgeInsets.only(right: 20),
+                              child: Icon(
+                                Icons.keyboard_arrow_right_sharp,
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -249,7 +249,10 @@ class _DetailAllDataState extends State<DetailAllData> {
           builder: (context, snapshot) {
             if (snapshot.hasData == false) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: Padding(
+                  padding: EdgeInsets.only(top: size.height * 0.3),
+                  child: CircularProgressIndicator(),
+                ),
               );
             } else {
               var data = (snapshot.data as List).toList();
