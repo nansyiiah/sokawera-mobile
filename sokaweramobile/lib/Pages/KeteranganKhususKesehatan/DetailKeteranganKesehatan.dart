@@ -669,6 +669,7 @@ class _DetailKeteranganKesehatanState extends State<DetailKeteranganKesehatan> {
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
                 controller: biayaKesehatanController,
+                keyboardType: TextInputType.number,
                 enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),

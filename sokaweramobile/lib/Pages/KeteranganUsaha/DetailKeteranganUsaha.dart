@@ -364,6 +364,7 @@ class _DetailKeteranganUsahaState extends State<DetailKeteranganUsaha> {
               child: TextFormField(
                 controller: omsetPenjualanController,
                 enabled: true,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   labelText: 'Omset Penjualan',

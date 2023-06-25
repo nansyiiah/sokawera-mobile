@@ -205,6 +205,7 @@ class _PenguasaanTanahControllerState extends State<PenguasaanTanahController> {
               child: TextFormField(
                 controller: nomorUrutBidangController,
                 enabled: true,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   labelText: 'Nomor urut bidang',

@@ -444,6 +444,7 @@ class _KeteranganTempatControllerState
                         const EdgeInsets.only(left: 24, right: 24, top: 24),
                     child: TextFormField(
                       controller: rtController,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
                         labelText: 'RT',
@@ -469,6 +470,7 @@ class _KeteranganTempatControllerState
                         const EdgeInsets.only(left: 24, right: 24, top: 24),
                     child: TextFormField(
                       controller: rwController,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.person),
                         labelText: 'RW',
@@ -495,9 +497,10 @@ class _KeteranganTempatControllerState
                   left: 24, right: 24, top: 24, bottom: 24),
               child: TextFormField(
                 controller: nomorKKController,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: 'Nomor KK',
+                  labelText: 'Nomor KK (maksimal 16 digit)',
                   labelStyle: const TextStyle(
                     color: Colors.grey,
                   ),

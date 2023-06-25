@@ -125,7 +125,6 @@ class _InputScreenState extends State<InputScreen> {
         _isFilledKelahiran = false;
       });
     }
-    print(user);
   }
 
   _postKejadianKelahiran() async {
@@ -735,9 +734,9 @@ class _InputScreenState extends State<InputScreen> {
 
   _loadPenguasaanTanahLocal() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var user = localStorage.getString('penguasaan_tanah');
-    var parsing = jsonDecode(user!);
-    if (user != null) {
+    var user = localStorage.getString('penguasaan_tanah') ?? "";
+    if (user != "") {
+      var parsing = jsonDecode(user);
       if (parsing["jenis_lahan"] != "Lahan tempat tinggal") {
         setState(() {
           _isHaveLuasPanen = true;
@@ -1882,15 +1881,8 @@ class _InputScreenState extends State<InputScreen> {
                                               right: 24,
                                               top: 40,
                                               bottom: 10),
-                                          padding: EdgeInsets.only(
-                                              left: 24,
-                                              right: 24,
-                                              top: 14,
-                                              bottom: 14),
                                           decoration: BoxDecoration(
-                                            color: _isFilled
-                                                ? Color(0xFF68b7d8)
-                                                : Colors.grey,
+                                            color: Color(0xFF68b7d8),
                                             borderRadius:
                                                 BorderRadius.circular(5),
                                           ),

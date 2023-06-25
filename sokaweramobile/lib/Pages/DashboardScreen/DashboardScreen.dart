@@ -19,12 +19,12 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String name = "";
-  var jml_laki;
-  var jml_perempuan;
-  var total_penduduk;
-  var jml_warga_merantau;
-  var jml_anak_sekolah;
-  var jml_warga_hamil;
+  var jml_laki,
+      jml_perempuan,
+      total_penduduk,
+      jml_warga_merantau,
+      jml_anak_sekolah,
+      jml_warga_hamil;
   List data_responden = [];
   var data_res_json = {};
   List data_sekolah = [];
@@ -129,7 +129,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       Get.to(LoginScreen());
     }
 
-    // set up the buttons
     Widget cancelButton = TextButton(
       child: Text("Cancel"),
       onPressed: () {
@@ -144,7 +143,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
     );
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("Logout"),
       content: Text(
@@ -157,7 +155,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ],
     );
 
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -167,7 +164,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   showErrDialog(BuildContext context) {
-    // set up the buttons
     Widget cancelButton = TextButton(
       child: Text("OK"),
       onPressed: () {
@@ -176,7 +172,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
     );
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("Error"),
       content: Text(
@@ -188,7 +183,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ],
     );
 
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -494,7 +488,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         ),
                                 ),
                                 Container(
-                                  // padding: EdgeInsets.only(left: 5),
                                   child: Text(
                                     "Warga sedang sekolah",
                                     textAlign: TextAlign.center,

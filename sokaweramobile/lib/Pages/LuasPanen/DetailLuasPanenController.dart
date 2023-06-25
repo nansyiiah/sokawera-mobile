@@ -149,6 +149,7 @@ class _DetailLuasPanenControllerState extends State<DetailLuasPanenController> {
               child: TextFormField(
                 controller: frekuensiPanenController,
                 enabled: true,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   labelText: 'Frekuensi Panen',
@@ -172,6 +173,7 @@ class _DetailLuasPanenControllerState extends State<DetailLuasPanenController> {
               child: TextFormField(
                 controller: luasPanenController,
                 enabled: true,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   labelText: 'Luas Panen (Meter Persegi)',
@@ -195,6 +197,7 @@ class _DetailLuasPanenControllerState extends State<DetailLuasPanenController> {
               child: TextFormField(
                 controller: produksiController,
                 enabled: true,
+                keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   labelText: 'Produksi (Kg)',

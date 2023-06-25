@@ -5,7 +5,6 @@ import 'package:sokaweramobile/Pages/LandingScreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MaterialApp(
     home: MyHomePage(),
     debugShowCheckedModeBanner: false,

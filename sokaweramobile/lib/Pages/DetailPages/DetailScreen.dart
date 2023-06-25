@@ -209,7 +209,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     ],
                   ),
                   Container(
-                    height: size.height * 0.15,
+                    height: size.height * 0.17,
                     width: size.width,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -221,7 +221,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         Center(
                           child: Container(
                             alignment: Alignment.center,
-                            height: size.height * 0.1,
+                            height: size.height * 0.12,
                             width: size.width * 0.2,
                             margin: EdgeInsets.only(
                                 left: 24, right: 20, top: 30, bottom: 20),
@@ -278,7 +278,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   children: [
                                     SizedBox(
                                       height: 23,
-                                      width: 70,
+                                      width: 85,
                                       child: ElevatedButton(
                                         onPressed: () {},
                                         child: Text(

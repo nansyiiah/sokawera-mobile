@@ -299,6 +299,7 @@ class _DetailKeteranganPendidikanState
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
                 controller: kelasController,
+                keyboardType: TextInputType.number,
                 enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
@@ -432,6 +433,7 @@ class _DetailKeteranganPendidikanState
               padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
               child: TextFormField(
                 controller: jumlahBiayaSekolahController,
+                keyboardType: TextInputType.number,
                 enabled: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),

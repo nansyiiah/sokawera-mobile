@@ -44,18 +44,12 @@ class _LoginScreenState extends State<LoginScreen> {
       Get.to(BottomNavBar());
     } else {
       var snackBar = SnackBar(content: Text('Username / Password Salah'));
-      // Step 3
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
-
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      // appBar: AppBar(),
-      // backgroundColor: Color(0xFF68b7d8),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(

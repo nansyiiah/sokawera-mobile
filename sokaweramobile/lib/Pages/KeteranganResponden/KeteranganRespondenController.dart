@@ -116,8 +116,46 @@ class _KeteranganRespondenControllerState
   void initState() {
     _loadUserData();
     _loadKeteranganTempatData();
-    _loadKeteranganRespondenData();
+    // _loadKeteranganRespondenData();
     super.initState();
+  }
+
+  showDeleteDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context, rootNavigator: true).pop(false);
+      },
+    );
+
+    Widget okButton = TextButton(
+      onPressed: () {
+        _deleteLocalKeteranganRespondenData();
+      },
+      child: Text("OK"),
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Message"),
+      content: Text(
+        "Are you sure want to delete ?",
+        style: GoogleFonts.poppins(),
+      ),
+      actions: [
+        cancelButton,
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   _deleteLocalKeteranganRespondenData() async {
@@ -183,6 +221,7 @@ class _KeteranganRespondenControllerState
       child: Text("OK"),
       onPressed: () {
         Navigator.of(context, rootNavigator: true).pop();
+        Get.to(BottomNavBar());
       },
     );
 
@@ -219,589 +258,231 @@ class _KeteranganRespondenControllerState
     }
   }
 
-  _loadKeteranganRespondenData() async {
+  _savedDataToLocal() async {
+    var total_keluarga_sesuai_kk = int.parse(
+            jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text) +
+        int.parse(jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text);
+    var total_keluarga_tinggal_dirumah = int.parse(
+            jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text) +
+        int.parse(
+            jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller.text);
+    var total_keluarga_tidak_tinggal_dirumah = int.parse(
+            jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller
+                .text) +
+        int.parse(
+            jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
+                .text);
+    var total_orang_bukan_keluarga_tapi_tinggal_dirumah = int.parse(
+            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
+                .text) +
+        int.parse(
+            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
+                .text);
+    var total_orang_tinggal_dirumah = total_keluarga_tinggal_dirumah +
+        total_orang_bukan_keluarga_tapi_tinggal_dirumah;
+    var total_laki_tinggal_dirumah = int.parse(
+            jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text) +
+        int.parse(
+            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
+                .text);
+    var total_perempuan_tinggal_dirumah = int.parse(
+            jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller.text) +
+        int.parse(
+            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
+                .text);
+    var total_anggota_keluarga_memiliki_jamkes = int.parse(
+            jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text) +
+        int.parse(jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller
+            .text);
+    var total_anggota_keluarga_mencari_kerja = int.parse(
+            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller
+                .text) +
+        int.parse(
+            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
+                .text);
+    var total_anggota_keluarga_tki = int.parse(
+            jumlah_anggota_keluarga_sedang_tki_laki_Controller.text) +
+        int.parse(jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text);
+    var total_anggota_keluarga_pns_polri = int.parse(
+            jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text) +
+        int.parse(
+            jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text) +
+        int.parse(
+            jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text);
+    var total_keluarga_full = total_keluarga_sesuai_kk +
+        total_orang_bukan_keluarga_tapi_tinggal_dirumah;
+    var data = {
+      'id_petugas': id_petugas,
+      'rt': rt,
+      'rw': rw,
+      'nik_kk': nomor_kk,
+      'nama_kepala_keluarga': nama_kepala_keluarga_Controller.text,
+      'jumlah_anggota_keluarga_sesuai_kk': total_keluarga_sesuai_kk,
+      'jumlah_anggota_keluarga_sesuai_kk_laki':
+          jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text,
+      'jumlah_anggota_keluarga_sesuai_kk_perempuan':
+          jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text,
+      'jumlah_anggota_keluarga_tinggal_dirumah': total_keluarga_tinggal_dirumah,
+      'jumlah_anggota_keluarga_tinggal_dirumah_laki':
+          jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text,
+      'jumlah_anggota_keluarga_tinggal_dirumah_perempuan':
+          jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller.text,
+      'jumlah_anggota_keluarga_tidak_tinggal_dirumah':
+          total_keluarga_tidak_tinggal_dirumah,
+      'jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki':
+          jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller.text,
+      'jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan':
+          jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
+              .text,
+      'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah':
+          total_orang_bukan_keluarga_tapi_tinggal_dirumah,
+      'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki':
+          jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller.text,
+      'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan':
+          jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
+              .text,
+      'jumlah_orang_tinggal_dirumah': total_orang_tinggal_dirumah,
+      'jumlah_orang_tinggal_dirumah_laki': total_laki_tinggal_dirumah,
+      'jumlah_orang_tinggal_dirumah_perempuan': total_perempuan_tinggal_dirumah,
+      'jumlah_anggota_keluarga_menyusui':
+          jumlah_anggota_keluarga_menyusui_Controller.text,
+      'jumlah_anggota_keluarga_jaminan_kesehatan':
+          total_anggota_keluarga_memiliki_jamkes,
+      'jumlah_anggota_keluarga_jaminan_kesehatan_laki':
+          jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text,
+      'jumlah_anggota_keluarga_jaminan_kesehatan_perempuan':
+          jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller.text,
+      'jumlah_anggota_keluarga_sedang_mencari_pekerjaan':
+          total_anggota_keluarga_mencari_kerja,
+      'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki':
+          jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller.text,
+      'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan':
+          jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
+              .text,
+      'jumlah_anggota_keluarga_sedang_tki': total_anggota_keluarga_tki,
+      'jumlah_anggota_keluarga_sedang_tki_laki':
+          jumlah_anggota_keluarga_sedang_tki_laki_Controller.text,
+      'jumlah_anggota_keluarga_sedang_tki_perempuan':
+          jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text,
+      'jumlah_anggota_keluarga_ikatan_dinas': total_anggota_keluarga_pns_polri,
+      'jumlah_anggota_keluarga_ikatan_dinas_pns':
+          jumlah_anggota_keluarga_ikatan_dinas_pns_Controller.text,
+      'jumlah_anggota_keluarga_ikatan_dinas_tni_polri':
+          jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text,
+      'jumlah_anggota_keluarga_ikatan_dinas_pensiunan':
+          jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text,
+    };
+
+    List data_sebelum_append = [];
+    data_sebelum_append.add(data);
+    final dataEncode = jsonEncode(data);
     SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var data = localStorage.getString('keterangan_responden');
-    if (data != null) {
-      setState(() {
-        var id_petugas = localStorage.getInt('id_petugas');
-        var rt = localStorage.getInt('rt');
-        var rw = localStorage.getInt('rw');
-        var nik_kk = localStorage.getInt('nik_kk');
-        var nama_kepala_keluarga =
-            localStorage.getString('nama_kepala_keluarga');
-        var jumlah_anggota_keluarga_sesuai_kk =
-            localStorage.getInt('jumlah_anggota_keluarga_sesuai_kk');
-        var jumlah_anggota_keluarga_sesuai_kk_laki =
-            localStorage.getInt('jumlah_anggota_keluarga_sesuai_kk_laki');
-        var jumlah_anggota_keluarga_sesuai_kk_perempuan =
-            localStorage.getInt('jumlah_anggota_keluarga_sesuai_kk_perempuan');
-        var jumlah_anggota_keluarga_tinggal_dirumah =
-            localStorage.getInt('jumlah_anggota_keluarga_tinggal_dirumah');
-        var jumlah_anggota_keluarga_tinggal_dirumah_laki =
-            localStorage.getInt('jumlah_anggota_keluarga_tinggal_dirumah_laki');
-        var jumlah_anggota_keluarga_tinggal_dirumah_perempuan = localStorage
-            .getInt('jumlah_anggota_keluarga_tinggal_dirumah_perempuan');
-        var jumlah_anggota_keluarga_tidak_tinggal_dirumah = localStorage
-            .getInt('jumlah_anggota_keluarga_tidak_tinggal_dirumah');
-        var jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki = localStorage
-            .getInt('jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki');
-        var jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan =
-            localStorage.getInt(
-                'jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan');
-        var jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah = localStorage
-            .getInt('jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah');
-        var jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki = localStorage
-            .getInt('jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki');
-        var jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan =
-            localStorage.getInt(
-                'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan');
-        var jumlah_orang_tinggal_dirumah =
-            localStorage.getInt('jumlah_orang_tinggal_dirumah');
-        var jumlah_orang_tinggal_dirumah_laki =
-            localStorage.getInt('jumlah_orang_tinggal_dirumah_laki');
-        var jumlah_orang_tinggal_dirumah_perempuan =
-            localStorage.getInt('jumlah_orang_tinggal_dirumah_perempuan');
-        var jumlah_anggota_keluarga_menyusui =
-            localStorage.getInt('jumlah_anggota_keluarga_menyusui');
-        var jumlah_anggota_keluarga_jaminan_kesehatan =
-            localStorage.getInt('jumlah_anggota_keluarga_jaminan_kesehatan');
-        var jumlah_anggota_keluarga_jaminan_kesehatan_laki = localStorage
-            .getInt('jumlah_anggota_keluarga_jaminan_kesehatan_laki');
-        var jumlah_anggota_keluarga_jaminan_kesehatan_perempuan = localStorage
-            .getInt('jumlah_anggota_keluarga_jaminan_kesehatan_perempuan');
-        var jumlah_anggota_keluarga_sedang_mencari_pekerjaan = localStorage
-            .getInt('jumlah_anggota_keluarga_sedang_mencari_pekerjaan');
-        var jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki = localStorage
-            .getInt('jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki');
-        var jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan =
-            localStorage.getInt(
-                'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan');
-        var jumlah_anggota_keluarga_sedang_tki =
-            localStorage.getInt('jumlah_anggota_keluarga_sedang_tki');
-        var jumlah_anggota_keluarga_sedang_tki_laki =
-            localStorage.getInt('jumlah_anggota_keluarga_sedang_tki_laki');
-        var jumlah_anggota_keluarga_sedang_tki_perempuan =
-            localStorage.getInt('jumlah_anggota_keluarga_sedang_tki_perempuan');
-        var jumlah_anggota_keluarga_ikatan_dinas =
-            localStorage.getInt('jumlah_anggota_keluarga_ikatan_dinas');
-        var jumlah_anggota_keluarga_ikatan_dinas_pns =
-            localStorage.getInt('jumlah_anggota_keluarga_ikatan_dinas_pns');
-        var jumlah_anggota_keluarga_ikatan_dinas_tni_polri = localStorage
-            .getInt('jumlah_anggota_keluarga_ikatan_dinas_tni_polri');
-        var jumlah_anggota_keluarga_ikatan_dinas_pensiunan = localStorage
-            .getInt('jumlah_anggota_keluarga_ikatan_dinas_pensiunan');
-        nama_kepala_keluarga_Controller.text = "${nama_kepala_keluarga}";
-        jumlah_anggota_keluarga_sesuai_kk_Controller.text =
-            "${jumlah_anggota_keluarga_sesuai_kk}";
-        jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text =
-            jumlah_anggota_keluarga_sesuai_kk_laki.toString();
-        jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text =
-            "${jumlah_anggota_keluarga_sesuai_kk_perempuan}";
-        jumlah_anggota_keluarga_tinggal_dirumah_Controller.text =
-            "${jumlah_anggota_keluarga_tinggal_dirumah}";
-        jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text =
-            "${jumlah_anggota_keluarga_tinggal_dirumah_laki}";
-        jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller.text =
-            "${jumlah_anggota_keluarga_tinggal_dirumah_perempuan}";
-        jumlah_anggota_keluarga_tidak_tinggal_dirumah_Controller.text =
-            "${jumlah_anggota_keluarga_tidak_tinggal_dirumah}";
-        jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller.text =
-            "${jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki}";
-        jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
-                .text =
-            "${jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan}";
-        jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_Controller.text =
-            "${jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah}";
-        jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller.text =
-            "${jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki}";
-        jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                .text =
-            "${jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan}";
-        jumlah_orang_tinggal_dirumah_Controller.text =
-            "${jumlah_orang_tinggal_dirumah}";
-        jumlah_orang_tinggal_dirumah_laki_Controller.text =
-            "${jumlah_orang_tinggal_dirumah_laki}";
-        jumlah_orang_tinggal_dirumah_perempuan_Controller.text =
-            "${jumlah_orang_tinggal_dirumah_perempuan}";
-        jumlah_anggota_keluarga_menyusui_Controller.text =
-            "${jumlah_anggota_keluarga_menyusui}";
-        jumlah_anggota_keluarga_jaminan_kesehatan_Controller.text =
-            "${jumlah_anggota_keluarga_jaminan_kesehatan}";
-        jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text =
-            "${jumlah_anggota_keluarga_jaminan_kesehatan_laki}";
-        jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller.text =
-            "${jumlah_anggota_keluarga_jaminan_kesehatan_perempuan}";
-        jumlah_anggota_keluarga_sedang_mencari_pekerjaan_Controller.text =
-            "${jumlah_anggota_keluarga_sedang_mencari_pekerjaan}";
-        jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller.text =
-            "${jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki}";
-        jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
-                .text =
-            "${jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan}";
-        jumlah_anggota_keluarga_sedang_tki_Controller.text =
-            "${jumlah_anggota_keluarga_sedang_tki}";
-        jumlah_anggota_keluarga_sedang_tki_laki_Controller.text =
-            "${jumlah_anggota_keluarga_sedang_tki_laki}";
-        jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text =
-            "${jumlah_anggota_keluarga_sedang_tki_perempuan}";
-        jumlah_anggota_keluarga_ikatan_dinas_Controller.text =
-            "${jumlah_anggota_keluarga_ikatan_dinas}";
-        jumlah_anggota_keluarga_ikatan_dinas_pns_Controller.text =
-            "${jumlah_anggota_keluarga_ikatan_dinas_pns}";
-        jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text =
-            "${jumlah_anggota_keluarga_ikatan_dinas_tni_polri}";
-        jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text =
-            "${jumlah_anggota_keluarga_ikatan_dinas_pensiunan}";
-      });
+    localStorage.setString('keterangan_responden', dataEncode);
+    localStorage.setInt('id_petugas', id_petugas);
+    localStorage.setInt('rt', rt);
+    localStorage.setInt('rw', rw);
+    localStorage.setInt('nik_kk', nomor_kk);
+    localStorage.setInt('total_keluarga_full', total_keluarga_full);
+    localStorage.setString(
+        'nama_kepala_keluarga', nama_kepala_keluarga_Controller.text);
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_sesuai_kk', total_keluarga_sesuai_kk);
+    localStorage.setInt('jumlah_anggota_keluarga_sesuai_kk_laki',
+        int.parse(jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text));
+    localStorage.setInt('jumlah_anggota_keluarga_sesuai_kk_perempuan',
+        int.parse(jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text));
+    localStorage.setInt('jumlah_anggota_keluarga_tinggal_dirumah',
+        total_keluarga_tinggal_dirumah);
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_tinggal_dirumah_laki',
+        int.parse(
+            jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_tinggal_dirumah_perempuan',
+        int.parse(
+            jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller.text));
+    localStorage.setInt('jumlah_anggota_keluarga_tidak_tinggal_dirumah',
+        total_keluarga_tidak_tinggal_dirumah);
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki',
+        int.parse(jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller
+            .text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan',
+        int.parse(
+            jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
+                .text));
+    localStorage.setInt('jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah',
+        total_orang_bukan_keluarga_tapi_tinggal_dirumah);
+    localStorage.setInt(
+        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki',
+        int.parse(
+            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
+                .text));
+    localStorage.setInt(
+        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan',
+        int.parse(
+            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
+                .text));
+    localStorage.setInt(
+        'jumlah_orang_tinggal_dirumah', total_orang_tinggal_dirumah);
+    localStorage.setInt(
+        'jumlah_orang_tinggal_dirumah_laki', total_laki_tinggal_dirumah);
+    localStorage.setInt('jumlah_orang_tinggal_dirumah_perempuan',
+        total_perempuan_tinggal_dirumah);
+    localStorage.setInt('jumlah_anggota_keluarga_menyusui',
+        int.parse(jumlah_anggota_keluarga_menyusui_Controller.text));
+    localStorage.setInt('jumlah_anggota_keluarga_jaminan_kesehatan',
+        total_anggota_keluarga_memiliki_jamkes);
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_jaminan_kesehatan_laki',
+        int.parse(
+            jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_jaminan_kesehatan_perempuan',
+        int.parse(jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller
+            .text));
+    localStorage.setInt('jumlah_anggota_keluarga_sedang_mencari_pekerjaan',
+        total_anggota_keluarga_mencari_kerja);
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki',
+        int.parse(
+            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller
+                .text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan',
+        int.parse(
+            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
+                .text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_sedang_tki', total_anggota_keluarga_tki);
+    localStorage.setInt('jumlah_anggota_keluarga_sedang_tki_laki',
+        int.parse(jumlah_anggota_keluarga_sedang_tki_laki_Controller.text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_sedang_tki_perempuan',
+        int.parse(
+            jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text));
+    localStorage.setInt('jumlah_anggota_keluarga_ikatan_dinas',
+        total_anggota_keluarga_pns_polri);
+    localStorage.setInt('jumlah_anggota_keluarga_ikatan_dinas_pns',
+        int.parse(jumlah_anggota_keluarga_ikatan_dinas_pns_Controller.text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_ikatan_dinas_tni_polri',
+        int.parse(
+            jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text));
+    localStorage.setInt(
+        'jumlah_anggota_keluarga_ikatan_dinas_pensiunan',
+        int.parse(
+            jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text));
+
+    if (localStorage.getString('keterangan_responden') != null) {
+      print(data);
+      showAlertDialog(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController namaController =
-        TextEditingController(text: widget.name);
-    name = widget.name;
-    TextEditingController tandaTanganPencacahController =
-        TextEditingController(text: widget.inisial);
-    inisial = widget.inisial;
-    _calculate() async {
-      var total_keluarga_sesuai_kk =
-          int.parse(jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text) +
-              int.parse(
-                  jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text);
-      var total_keluarga_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text) +
-          int.parse(jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller
-              .text);
-      var total_keluarga_tidak_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller
-                  .text) +
-          int.parse(
-              jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
-                  .text);
-      var total_orang_bukan_keluarga_tapi_tinggal_dirumah = int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
-                  .text) +
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                  .text);
-      var total_orang_tinggal_dirumah = total_keluarga_tinggal_dirumah +
-          total_orang_bukan_keluarga_tapi_tinggal_dirumah;
-
-      // print(total_orang_tinggal_dirumah + int.parse(jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah.text));
-      var total_laki_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text) +
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
-                  .text);
-      var total_perempuan_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller
-                  .text) +
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                  .text);
-      var total_anggota_keluarga_memiliki_jamkes = int.parse(
-              jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text) +
-          int.parse(
-              jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller
-                  .text);
-      var total_anggota_keluarga_mencari_kerja = int.parse(
-              jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller
-                  .text) +
-          int.parse(
-              jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
-                  .text);
-      var total_anggota_keluarga_tki =
-          int.parse(jumlah_anggota_keluarga_sedang_tki_laki_Controller.text) +
-              int.parse(
-                  jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text);
-      var total_anggota_keluarga_pns_polri = int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text) +
-          int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text) +
-          int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text);
-      var data = {
-        'id_petugas': id_petugas,
-        'rt': rt,
-        'rw': rw,
-        'nik_kk': nomor_kk,
-        'nama_kepala_keluarga': nama_kepala_keluarga_Controller.text,
-        'jumlah_anggota_keluarga_sesuai_kk': total_keluarga_sesuai_kk,
-        'jumlah_anggota_keluarga_sesuai_kk_laki':
-            jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text,
-        'jumlah_anggota_keluarga_sesuai_kk_perempuan':
-            jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_tinggal_dirumah':
-            total_keluarga_tinggal_dirumah,
-        'jumlah_anggota_keluarga_tinggal_dirumah_laki':
-            jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text,
-        'jumlah_anggota_keluarga_tinggal_dirumah_perempuan':
-            jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_tidak_tinggal_dirumah':
-            total_keluarga_tidak_tinggal_dirumah,
-        'jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki':
-            jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller.text,
-        'jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan':
-            jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
-                .text,
-        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah':
-            total_orang_bukan_keluarga_tapi_tinggal_dirumah,
-        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki':
-            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
-                .text,
-        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan':
-            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                .text,
-        'jumlah_orang_tinggal_dirumah': total_orang_tinggal_dirumah,
-        'jumlah_orang_tinggal_dirumah_laki': total_laki_tinggal_dirumah,
-        'jumlah_orang_tinggal_dirumah_perempuan':
-            total_perempuan_tinggal_dirumah,
-        'jumlah_anggota_keluarga_menyusui':
-            jumlah_anggota_keluarga_menyusui_Controller.text,
-        'jumlah_anggota_keluarga_jaminan_kesehatan':
-            total_anggota_keluarga_memiliki_jamkes,
-        'jumlah_anggota_keluarga_jaminan_kesehatan_laki':
-            jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text,
-        'jumlah_anggota_keluarga_jaminan_kesehatan_perempuan':
-            jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan':
-            total_anggota_keluarga_mencari_kerja,
-        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki':
-            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller
-                .text,
-        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan':
-            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
-                .text,
-        'jumlah_anggota_keluarga_sedang_tki': total_anggota_keluarga_tki,
-        'jumlah_anggota_keluarga_sedang_tki_laki':
-            jumlah_anggota_keluarga_sedang_tki_laki_Controller.text,
-        'jumlah_anggota_keluarga_sedang_tki_perempuan':
-            jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_ikatan_dinas':
-            total_anggota_keluarga_pns_polri,
-        'jumlah_anggota_keluarga_ikatan_dinas_pns':
-            jumlah_anggota_keluarga_ikatan_dinas_pns_Controller.text,
-        'jumlah_anggota_keluarga_ikatan_dinas_tni_polri':
-            jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text,
-        'jumlah_anggota_keluarga_ikatan_dinas_pensiunan':
-            jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text,
-      };
-
-      var res = await Network().store(data, 'keterangan_responden');
-      var body = json.decode(res.body);
-      if (body['status'] == 200) {
-        print("success insert data");
-      } else {
-        print(body);
-      }
-    }
-
-    showAlertDialog(BuildContext context) {
-      // set up the buttons
-      Widget cancelButton = TextButton(
-        child: Text("OK"),
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop();
-          Get.to(BottomNavBar());
-        },
-      );
-
-      // set up the AlertDialog
-      AlertDialog alert = AlertDialog(
-        title: Text("Success Saved Data !"),
-        content: Text(
-          "Sukses menyimpan data !",
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          cancelButton,
-        ],
-      );
-
-      // show the dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-
-    showDeleteDialog(BuildContext context) {
-      // set up the buttons
-      Widget cancelButton = TextButton(
-        child: Text("Cancel"),
-        onPressed: () {
-          Navigator.of(context, rootNavigator: true).pop(false);
-        },
-      );
-
-      Widget okButton = TextButton(
-        onPressed: () {
-          _deleteLocalKeteranganRespondenData();
-        },
-        child: Text("OK"),
-      );
-
-      // set up the AlertDialog
-      AlertDialog alert = AlertDialog(
-        title: Text("Message"),
-        content: Text(
-          "Are you sure want to delete ?",
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          cancelButton,
-          okButton,
-        ],
-      );
-
-      // show the dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-
-    _savedDataToLocal() async {
-      var total_keluarga_sesuai_kk =
-          int.parse(jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text) +
-              int.parse(
-                  jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text);
-      var total_keluarga_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text) +
-          int.parse(jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller
-              .text);
-      var total_keluarga_tidak_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller
-                  .text) +
-          int.parse(
-              jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
-                  .text);
-      var total_orang_bukan_keluarga_tapi_tinggal_dirumah = int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
-                  .text) +
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                  .text);
-      var total_orang_tinggal_dirumah = total_keluarga_tinggal_dirumah +
-          total_orang_bukan_keluarga_tapi_tinggal_dirumah;
-      var total_laki_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text) +
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
-                  .text);
-      var total_perempuan_tinggal_dirumah = int.parse(
-              jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller
-                  .text) +
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                  .text);
-      var total_anggota_keluarga_memiliki_jamkes = int.parse(
-              jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text) +
-          int.parse(
-              jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller
-                  .text);
-      var total_anggota_keluarga_mencari_kerja = int.parse(
-              jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller
-                  .text) +
-          int.parse(
-              jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
-                  .text);
-      var total_anggota_keluarga_tki =
-          int.parse(jumlah_anggota_keluarga_sedang_tki_laki_Controller.text) +
-              int.parse(
-                  jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text);
-      var total_anggota_keluarga_pns_polri = int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text) +
-          int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text) +
-          int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text);
-      var total_keluarga_full = total_keluarga_sesuai_kk +
-          total_orang_bukan_keluarga_tapi_tinggal_dirumah;
-      var data = {
-        'id_petugas': id_petugas,
-        'rt': rt,
-        'rw': rw,
-        'nik_kk': nomor_kk,
-        'nama_kepala_keluarga': nama_kepala_keluarga_Controller.text,
-        'jumlah_anggota_keluarga_sesuai_kk': total_keluarga_sesuai_kk,
-        'jumlah_anggota_keluarga_sesuai_kk_laki':
-            jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text,
-        'jumlah_anggota_keluarga_sesuai_kk_perempuan':
-            jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_tinggal_dirumah':
-            total_keluarga_tinggal_dirumah,
-        'jumlah_anggota_keluarga_tinggal_dirumah_laki':
-            jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text,
-        'jumlah_anggota_keluarga_tinggal_dirumah_perempuan':
-            jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_tidak_tinggal_dirumah':
-            total_keluarga_tidak_tinggal_dirumah,
-        'jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki':
-            jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller.text,
-        'jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan':
-            jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
-                .text,
-        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah':
-            total_orang_bukan_keluarga_tapi_tinggal_dirumah,
-        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki':
-            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
-                .text,
-        'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan':
-            jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                .text,
-        'jumlah_orang_tinggal_dirumah': total_orang_tinggal_dirumah,
-        'jumlah_orang_tinggal_dirumah_laki': total_laki_tinggal_dirumah,
-        'jumlah_orang_tinggal_dirumah_perempuan':
-            total_perempuan_tinggal_dirumah,
-        'jumlah_anggota_keluarga_menyusui':
-            jumlah_anggota_keluarga_menyusui_Controller.text,
-        'jumlah_anggota_keluarga_jaminan_kesehatan':
-            total_anggota_keluarga_memiliki_jamkes,
-        'jumlah_anggota_keluarga_jaminan_kesehatan_laki':
-            jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text,
-        'jumlah_anggota_keluarga_jaminan_kesehatan_perempuan':
-            jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan':
-            total_anggota_keluarga_mencari_kerja,
-        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki':
-            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller
-                .text,
-        'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan':
-            jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
-                .text,
-        'jumlah_anggota_keluarga_sedang_tki': total_anggota_keluarga_tki,
-        'jumlah_anggota_keluarga_sedang_tki_laki':
-            jumlah_anggota_keluarga_sedang_tki_laki_Controller.text,
-        'jumlah_anggota_keluarga_sedang_tki_perempuan':
-            jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text,
-        'jumlah_anggota_keluarga_ikatan_dinas':
-            total_anggota_keluarga_pns_polri,
-        'jumlah_anggota_keluarga_ikatan_dinas_pns':
-            jumlah_anggota_keluarga_ikatan_dinas_pns_Controller.text,
-        'jumlah_anggota_keluarga_ikatan_dinas_tni_polri':
-            jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text,
-        'jumlah_anggota_keluarga_ikatan_dinas_pensiunan':
-            jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text,
-      };
-
-      List data_sebelum_append = [];
-      data_sebelum_append.add(data);
-      final dataEncode = jsonEncode(data);
-      SharedPreferences localStorage = await SharedPreferences.getInstance();
-      localStorage.setString('keterangan_responden', dataEncode);
-      localStorage.setInt('id_petugas', id_petugas);
-      localStorage.setInt('rt', rt);
-      localStorage.setInt('rw', rw);
-      localStorage.setInt('nik_kk', nomor_kk);
-      localStorage.setInt('total_keluarga_full', total_keluarga_full);
-      localStorage.setString(
-          'nama_kepala_keluarga', nama_kepala_keluarga_Controller.text);
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_sesuai_kk', total_keluarga_sesuai_kk);
-      localStorage.setInt('jumlah_anggota_keluarga_sesuai_kk_laki',
-          int.parse(jumlah_anggota_keluarga_sesuai_kk_laki_Controller.text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_sesuai_kk_perempuan',
-          int.parse(
-              jumlah_anggota_keluarga_sesuai_kk_perempuan_Controller.text));
-      localStorage.setInt('jumlah_anggota_keluarga_tinggal_dirumah',
-          total_keluarga_tinggal_dirumah);
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_tinggal_dirumah_laki',
-          int.parse(
-              jumlah_anggota_keluarga_tinggal_dirumah_laki_Controller.text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_tinggal_dirumah_perempuan',
-          int.parse(jumlah_anggota_keluarga_tinggal_dirumah_perempuan_Controller
-              .text));
-      localStorage.setInt('jumlah_anggota_keluarga_tidak_tinggal_dirumah',
-          total_keluarga_tidak_tinggal_dirumah);
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki',
-          int.parse(
-              jumlah_anggota_keluarga_tidak_tinggal_dirumah_laki_Controller
-                  .text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan',
-          int.parse(
-              jumlah_anggota_keluarga_tidak_tinggal_dirumah_perempuan_Controller
-                  .text));
-      localStorage.setInt('jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah',
-          total_orang_bukan_keluarga_tapi_tinggal_dirumah);
-      localStorage.setInt(
-          'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki',
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_laki_Controller
-                  .text));
-      localStorage.setInt(
-          'jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan',
-          int.parse(
-              jumlah_orang_bukan_keluarga_tapi_tinggal_dirumah_perempuan_Controller
-                  .text));
-      localStorage.setInt(
-          'jumlah_orang_tinggal_dirumah', total_orang_tinggal_dirumah);
-      localStorage.setInt(
-          'jumlah_orang_tinggal_dirumah_laki', total_laki_tinggal_dirumah);
-      localStorage.setInt('jumlah_orang_tinggal_dirumah_perempuan',
-          total_perempuan_tinggal_dirumah);
-      localStorage.setInt('jumlah_anggota_keluarga_menyusui',
-          int.parse(jumlah_anggota_keluarga_menyusui_Controller.text));
-      localStorage.setInt('jumlah_anggota_keluarga_jaminan_kesehatan',
-          total_anggota_keluarga_memiliki_jamkes);
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_jaminan_kesehatan_laki',
-          int.parse(
-              jumlah_anggota_keluarga_jaminan_kesehatan_laki_Controller.text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_jaminan_kesehatan_perempuan',
-          int.parse(
-              jumlah_anggota_keluarga_jaminan_kesehatan_perempuan_Controller
-                  .text));
-      localStorage.setInt('jumlah_anggota_keluarga_sedang_mencari_pekerjaan',
-          total_anggota_keluarga_mencari_kerja);
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki',
-          int.parse(
-              jumlah_anggota_keluarga_sedang_mencari_pekerjaan_laki_Controller
-                  .text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan',
-          int.parse(
-              jumlah_anggota_keluarga_sedang_mencari_pekerjaan_perempuan_Controller
-                  .text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_sedang_tki', total_anggota_keluarga_tki);
-      localStorage.setInt('jumlah_anggota_keluarga_sedang_tki_laki',
-          int.parse(jumlah_anggota_keluarga_sedang_tki_laki_Controller.text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_sedang_tki_perempuan',
-          int.parse(
-              jumlah_anggota_keluarga_sedang_tki_perempuan_Controller.text));
-      localStorage.setInt('jumlah_anggota_keluarga_ikatan_dinas',
-          total_anggota_keluarga_pns_polri);
-      localStorage.setInt('jumlah_anggota_keluarga_ikatan_dinas_pns',
-          int.parse(jumlah_anggota_keluarga_ikatan_dinas_pns_Controller.text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_ikatan_dinas_tni_polri',
-          int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_tni_polri_Controller.text));
-      localStorage.setInt(
-          'jumlah_anggota_keluarga_ikatan_dinas_pensiunan',
-          int.parse(
-              jumlah_anggota_keluarga_ikatan_dinas_pensiunan_Controller.text));
-
-      if (localStorage.getString('keterangan_responden') != null) {
-        showAlertDialog(context);
-      }
-    }
-
     Size size = MediaQuery.of(context).size;
     _loadKeteranganTempatData();
     return Scaffold(

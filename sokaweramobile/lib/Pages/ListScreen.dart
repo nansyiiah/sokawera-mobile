@@ -256,11 +256,6 @@ class _ListScreenState extends State<ListScreen> {
                                       shrinkWrap: true,
                                       itemCount: foundUser.length,
                                       itemBuilder: (context, index) {
-                                        var nama = rtList[index]
-                                            ["nama_kepala_keluarga"];
-                                        var rt = rtList[index]["rt"];
-                                        var nik = rtList[index]["nik_kk"];
-                                        var rw = rtList[index]["rw"];
                                         return InkWell(
                                           onTap: () {
                                             Navigator.push(
@@ -268,8 +263,9 @@ class _ListScreenState extends State<ListScreen> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     DetailScreen(
-                                                  item: rtList[index]["id"],
-                                                  nik: rtList[index]['nik_kk'],
+                                                  item: foundUser[index]["id"],
+                                                  nik: foundUser[index]
+                                                      ['nik_kk'],
                                                   // kk: rtList[index]['nik_kk'],
                                                 ),
                                               ),
