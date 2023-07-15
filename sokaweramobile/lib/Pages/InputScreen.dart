@@ -824,11 +824,35 @@ class _InputScreenState extends State<InputScreen> {
     }
   }
 
+  var tempUser = "";
+  var tempToken = "";
+  var tempUsername = "";
+  var tempId = 0;
+
+  _clearData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = localStorage.getString("token");
+    var user = localStorage.getString("user");
+    var username = localStorage.getString("username");
+    var id = localStorage.getInt('id_petugas');
+    setState(() {
+      tempToken = token!;
+      tempToken = user!;
+      tempUsername = username!;
+      tempId = id!;
+    });
+    localStorage.setString("token", tempToken);
+    localStorage.setString("user", tempUser);
+    localStorage.setString("username", tempUsername);
+    localStorage.setInt("id_petugas", tempId);
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     _getKeteranganUsahaFromLocal();
     _getStatusIsFilled();
+
     // _postKepemilikanHewanTernak();
     return Scaffold(
       backgroundColor: Color(0xFF68b7d8),
@@ -1874,6 +1898,7 @@ class _InputScreenState extends State<InputScreen> {
                                           setState(() {
                                             isLoading = true;
                                           });
+                                          await _clearData();
                                           await _postAllData();
                                         },
                                         child: Container(

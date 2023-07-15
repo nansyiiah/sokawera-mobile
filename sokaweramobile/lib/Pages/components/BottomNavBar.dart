@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sokaweramobile/Pages/InputScreen.dart';
 import 'package:sokaweramobile/Pages/ListScreen.dart';
 import 'package:sokaweramobile/Pages/DashboardScreen/DashboardScreen.dart';
+import 'package:sokaweramobile/Pages/Testing/new.dart';
 
 class BottomNavBar extends StatefulWidget {
   @override
@@ -21,6 +22,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       DashboardScreen(),
       InputScreen(),
       ListScreen(),
+      // NewDart(),
     ];
     super.initState();
   }
